@@ -1,0 +1,339 @@
+{
+  "@@locale": "en",
+  "appTitle": "UniBite",
+  "appTagline": "Your Campus, Your Food, Your Way.",
+  "loading": "Loading...",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "confirm": "Confirm",
+  "close": "Close",
+  "search": "Search",
+  "all": "All",
+  "active": "Active",
+  "inactive": "Inactive",
+  "suspended": "Suspended",
+  "open": "Open",
+  "closed": "Closed",
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "currencyJod": "JOD",
+  "roleStudent": "Student",
+  "roleCafeteriaAdmin": "Cafeteria Admin",
+  "roleCafeteriaStaff": "Cafeteria Staff",
+  "roleSystemAdmin": "System Admin",
+  "loginTitle": "Welcome Back",
+  "loginSubtitle": "Sign in with your campus account to continue.",
+  "emailLabel": "University Email",
+  "emailHint": "name@university.edu",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Confirm Password",
+  "fullNameLabel": "Full Name",
+  "phoneOptionalLabel": "Mobile Number (Optional)",
+  "verificationCodeLabel": "Demo Verification Code (123456)",
+  "loginButton": "Sign In",
+  "registerStudentLink": "New student? Create an account",
+  "forgotPasswordLink": "Forgot password?",
+  "registerTitle": "Student Registration",
+  "registerSubtitle": "Use the simulated verification code 123456 to verify your university email.",
+  "registerButton": "Create Student Account",
+  "resetPasswordTitle": "Reset Password",
+  "resetPasswordSubtitle": "Enter your email, demo code 123456, and a new password.",
+  "resetPasswordButton": "Reset Password",
+  "passwordResetSuccess": "Password updated. You can now sign in.",
+  "sendDemoCodeInfo": "Demo verification code is 123456",
+  "demoQuickFillTitle": "Quick Demo Accounts (One-Click Fill)",
+  "fieldRequired": "This field is required.",
+  "invalidEmail": "Enter a valid email address.",
+  "passwordTooShort": "Password must be at least 6 characters.",
+  "passwordsDoNotMatch": "Passwords do not match.",
+  "invalidPrice": "Enter a valid positive price.",
+  "invalidNumber": "Enter a valid positive number.",
+  "onboardingTitle": "Choose Your Campus",
+  "onboardingSubtitle": "Select your university and campus branch to view nearby cafeterias.",
+  "selectUniversityLabel": "University",
+  "selectCampusLabel": "Campus Branch",
+  "continueButton": "Continue to Cafeterias",
+  "noCampusesForUniversity": "No active campuses found for this university.",
+  "demoBarTitle": "DEMO MODE",
+  "switchRoleLabel": "Switch Role",
+  "offlineToggleLabel": "Offline",
+  "simulateOfflineTooltip": "Toggle simulated connection loss banner",
+  "runAutoRejectNow": "Run Auto-Reject",
+  "resetDemoData": "Reset Demo",
+  "resetDemoConfirmTitle": "Reset Demo Data?",
+  "resetDemoConfirmBody": "This clears local Hive storage and restores the initial GP1 seed data.",
+  "demoDataResetSuccess": "Local storage cleared and re-seeded.",
+  "autoRejectCompletedCount": "Auto-reject checked pending orders: {count} rejected.",
+  "@autoRejectCompletedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "connectionLostBanner": "Connection lost — operating in offline cache mode. Updates will sync on reconnect.",
+  "screenAwakeBadge": "Screen Wake Lock: ON",
+  "navCafeterias": "Cafeterias",
+  "navOrders": "Orders",
+  "navCart": "Cart",
+  "navSettings": "Settings",
+  "searchCafeteriasAndMealsHint": "Search cafeterias or meals...",
+  "noCafeteriasOnCampus": "No active cafeterias are listed on this campus yet.",
+  "noMatchingResults": "No cafeterias or meals matched your search.",
+  "workingHoursFormat": "Hours: {hours}",
+  "@workingHoursFormat": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "prepTimeFormat": "~{minutes} min prep",
+  "@prepTimeFormat": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "menuTitle": "Menu",
+  "noMealsInCategory": "No meals found in this category.",
+  "mealDetailsTitle": "Meal Details",
+  "specialNoteLabel": "Special Instructions (Optional)",
+  "specialNoteHint": "e.g., Extra garlic sauce, no pickles",
+  "quantityLabel": "Quantity",
+  "addToCartButton": "Add to Cart",
+  "addedToCartMessage": "Added {mealName} to cart.",
+  "@addedToCartMessage": {
+    "placeholders": {
+      "mealName": {
+        "type": "String"
+      }
+    }
+  },
+  "cafeteriaClosedOrderBlocked": "This cafeteria is currently closed and cannot accept immediate orders.",
+  "mealUnavailableBlocked": "This meal is currently marked unavailable.",
+  "differentCafeteriaTitle": "Start a New Cart?",
+  "differentCafeteriaMessage": "Your cart already has items from another cafeteria. Each order can only include one cafeteria. Clear current cart and add this item?",
+  "clearAndAddButton": "Clear & Add",
+  "cartTitle": "Your Cart",
+  "emptyCartTitle": "Your cart is empty",
+  "emptyCartSubtitle": "Browse campus cafeterias and add meals to start an order.",
+  "clearCartButton": "Clear Cart",
+  "itemSubtotal": "Itemized Summary",
+  "totalLabel": "Total",
+  "pickupModeLabel": "Pickup Option",
+  "orderNowOption": "Order Now (ASAP)",
+  "preOrderOption": "Pre-Order for Pickup Time",
+  "choosePickupTime": "Choose Pickup Time",
+  "selectedPickupTime": "Pickup at {time}",
+  "@selectedPickupTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "pickupTimeOutsideHours": "Selected pickup time must be within the cafeteria working hours ({hours}).",
+  "@pickupTimeOutsideHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentMethodCashOnly": "Payment: Cash at Pickup Only",
+  "fulfillmentSelfPickupOnly": "Fulfillment: Self-Pickup at Counter Only",
+  "placeOrderButton": "Place Cash Order",
+  "orderPlacedSuccess": "Order {orderNumber} placed! Show your QR code at pickup.",
+  "@orderPlacedSuccess": {
+    "placeholders": {
+      "orderNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "studentOrdersTitle": "My Orders",
+  "noOrdersYet": "You have not placed any orders yet.",
+  "activeOrdersSection": "Active Orders",
+  "pastOrdersSection": "Order History",
+  "orderNumberLabel": "Order #{number}",
+  "@orderNumberLabel": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "pickupQrCodeTitle": "Pickup QR Code",
+  "cancelOrderButton": "Cancel Order",
+  "cancelOrderConfirm": "Cancel this pending order before the cafeteria accepts it?",
+  "rejectReasonLabel": "Reason: {reason}",
+  "@rejectReasonLabel": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "statusPending": "Pending",
+  "statusAccepted": "Accepted",
+  "statusPreparing": "Preparing",
+  "statusReady": "Ready for Pickup",
+  "statusCompleted": "Completed",
+  "statusRejected": "Rejected",
+  "statusCancelled": "Cancelled",
+  "orderTypeApp": "App Order",
+  "orderTypeWalkin": "Walk-In",
+  "settingsTitle": "Settings & Account",
+  "languageLabel": "Language / اللغة",
+  "englishLabel": "English",
+  "arabicLabel": "العربية",
+  "currentCampusLabel": "Current Campus",
+  "changeCampusButton": "Change University / Campus",
+  "logoutButton": "Sign Out",
+  "tabLiveBoard": "Live Order Board",
+  "tabMenuManager": "Menu Manager",
+  "tabWorkingHours": "Hours & Settings",
+  "tabStaffAccounts": "Staff Accounts",
+  "tabOrderHistory": "Order History",
+  "tabWalkInOrder": "New Walk-In Order",
+  "tabQrLookup": "QR / Order Lookup",
+  "soundAlertOn": "Alert Sound: ON",
+  "soundAlertMuted": "Alert Sound: Muted",
+  "pendingAlertBanner": "{count} new pending order(s) waiting for response!",
+  "@pendingAlertBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "columnNew": "New",
+  "columnPreparing": "Preparing",
+  "columnReady": "Ready",
+  "acceptOrderButton": "Accept",
+  "rejectOrderButton": "Reject",
+  "startPreparingButton": "Start Preparing",
+  "markReadyButton": "Mark Ready",
+  "completePickupButton": "Complete Pickup",
+  "autoRejectInSeconds": "Auto-reject in {seconds}s",
+  "@autoRejectInSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "rejectOrderDialogTitle": "Reject Order",
+  "rejectReasonInputLabel": "Rejection Reason",
+  "rejectQuickOut": "Out of ingredients",
+  "rejectQuickBusy": "Kitchen overloaded",
+  "rejectQuickClosing": "Closing soon",
+  "walkInTitle": "Create Walk-In Order",
+  "walkInSubtitle": "Select available meals for an in-person customer paying cash at the counter.",
+  "createWalkInButton": "Create Walk-In Ticket",
+  "qrLookupTitle": "Pickup QR & Order Number Lookup",
+  "qrLookupHint": "Enter order number (e.g. UB-1001) or scan QR payload",
+  "lookupButton": "Find Order",
+  "orderNotFound": "No order found matching that code in your cafeteria.",
+  "quickReadyOrdersLabel": "Quick Demo Select (Ready Orders):",
+  "addMealButton": "Add Meal",
+  "editMealTitle": "Edit Meal",
+  "mealNameLabel": "Meal Name",
+  "mealCategoryLabel": "Category",
+  "mealPriceLabel": "Price (JOD)",
+  "mealDescriptionLabel": "Description",
+  "mealPhotoLabel": "Meal Photo",
+  "pickImageButton": "Upload Photo",
+  "orChoosePreset": "Or select a bundled sample icon:",
+  "workingHoursTitle": "Cafeteria Operating Hours & Timeouts",
+  "openingTimeLabel": "Opening Time",
+  "closingTimeLabel": "Closing Time",
+  "prepMinutesLabel": "Prep Time (Minutes)",
+  "timeoutSecondsLabel": "Auto-Reject Timeout (Seconds)",
+  "saveSettingsButton": "Save Cafeteria Settings",
+  "settingsSavedMessage": "Cafeteria settings updated.",
+  "staffAccountsTitle": "Cafeteria Staff Accounts",
+  "addStaffButton": "Add Staff Account",
+  "staffPermissionNote": "Staff accounts can manage live orders, walk-in orders, and QR pickups, but cannot edit menu items, prices, hours, or staff.",
+  "noStaffYet": "No staff accounts created for this cafeteria yet.",
+  "noHistoryYet": "No historical orders yet.",
+  "tabUniversities": "Universities",
+  "tabCampuses": "Campuses",
+  "tabCafeterias": "Cafeterias & Owners",
+  "tabUsers": "All Users",
+  "addUniversityButton": "Add University",
+  "universityNameLabel": "University Name",
+  "addCampusButton": "Add Campus Branch",
+  "campusNameLabel": "Campus Name",
+  "campusLocationLabel": "Campus Location",
+  "addCafeteriaButton": "Create Cafeteria & Owner",
+  "cafeteriaNameLabel": "Cafeteria Name",
+  "ownerNameLabel": "Owner (Cafeteria Admin) Name",
+  "ownerEmailLabel": "Owner Login Email",
+  "ownerPasswordLabel": "Owner Initial Password",
+  "filterByUniversity": "Filter by University",
+  "filterByRole": "Filter by Role",
+  "allRoles": "All Roles",
+  "categorySandwiches": "Sandwiches",
+  "categoryHotMeals": "Hot Meals",
+  "categorySalads": "Salads",
+  "categoryBeverages": "Beverages",
+  "categoryDesserts": "Desserts",
+  "loginHeroHeadline": "Hungry between lectures?",
+  "loginHeroSubtitle": "Order fresh from campus & skip the queue.",
+  "introSlide1Title": "Skip the queue",
+  "introSlide1Body": "Order ahead and grab your meal right when break starts.",
+  "introSlide2Title": "Order before your break",
+  "introSlide2Body": "Pick now or schedule an exact pickup slot between classes.",
+  "introSlide3Title": "Pick up and go",
+  "introSlide3Body": "Flash your QR ticket and pay cash at the counter.",
+  "skipButton": "Skip",
+  "nextButton": "Next",
+  "getStartedButton": "Get Started",
+  "homeGreeting": "Ready for a bite?",
+  "openNowSection": "Open now",
+  "allCafeteriasSection": "All cafeterias",
+  "searchUniversitiesHint": "Search universities...",
+  "stepAccount": "1. Account",
+  "stepCampus": "2. Campus",
+  "passwordStrengthWeak": "Weak",
+  "passwordStrengthGood": "Good",
+  "passwordStrengthStrong": "Strong",
+  "removedItemUndo": "Removed {item}",
+  "@removedItemUndo": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "undoAction": "Undo",
+  "statusPlainPending": "Waiting for kitchen confirmation",
+  "statusPlainAccepted": "Accepted — queued next",
+  "statusPlainPreparing": "Being prepared fresh",
+  "statusPlainReady": "Ready — show your QR at counter",
+  "statusPlainCompleted": "Picked up & paid in cash",
+  "statusPlainRejected": "Declined by cafeteria",
+  "statusPlainCancelled": "Cancelled before acceptance",
+  "componentGalleryTitle": "Component Gallery",
+  "colorSystemLabel": "70 / 20 / 10 Color System",
+  "buttonsAndControlsLabel": "Buttons, Pills & Steppers",
+  "orderStepperGalleryLabel": "Animated Order Stepper",
+  "foodIllustrationsLabel": "Vector Food Artwork",
+  "liveConnectedBadge": "Live Connected",
+  "elapsedMinutesLabel": "{minutes}m ago",
+  "@elapsedMinutesLabel": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "registerTermsLine": "By creating an account you agree to campus cash-at-pickup terms."
+}
