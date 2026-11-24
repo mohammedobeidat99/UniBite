@@ -483,7 +483,7 @@ class _StepBadge extends StatelessWidget {
     final bgColor = active
         ? AppColors.orange
         : (done ? AppColors.green500 : AppColors.green700);
-    final fgColor = active ? AppColors.ink : AppColors.surface;
+    final fgColor = AppColors.surface;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),

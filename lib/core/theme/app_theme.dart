@@ -19,7 +19,7 @@ class AppTheme {
       primaryContainer: AppColors.green100,
       onPrimaryContainer: AppColors.green900,
       secondary: AppColors.orange,
-      onSecondary: AppColors.ink,
+      onSecondary: AppColors.surface,
       secondaryContainer: AppColors.orangeSoft,
       onSecondaryContainer: AppColors.orangeText,
       tertiary: AppColors.yellow,
@@ -98,7 +98,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.orange,
-          foregroundColor: AppColors.ink,
+          foregroundColor: AppColors.surface,
           minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
           shape: const StadiumBorder(),
@@ -106,21 +106,21 @@ class AppTheme {
           textStyle: textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w800,
             fontSize: 15,
-            color: AppColors.ink,
+            color: AppColors.surface,
           ),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.orange,
-          foregroundColor: AppColors.ink,
+          foregroundColor: AppColors.surface,
           minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: const StadiumBorder(),
           textStyle: textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w800,
             fontSize: 15,
-            color: AppColors.ink,
+            color: AppColors.surface,
           ),
         ),
       ),

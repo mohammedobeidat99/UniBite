@@ -80,7 +80,7 @@ class _UbPrimaryButtonState extends State<UbPrimaryButton> {
                   : widget.backgroundColor,
               disabledBackgroundColor: UniBiteColors.primary100,
               disabledForegroundColor: UniBiteColors.inkMuted,
-              foregroundColor: AppColors.ink,
+              foregroundColor: AppColors.surface,
               shape: const StadiumBorder(),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -92,7 +92,7 @@ class _UbPrimaryButtonState extends State<UbPrimaryButton> {
                       key: ValueKey('loading'),
                       width: 22,
                       height: 22,
-                      child: AppLoader.button(color: AppColors.ink),
+                      child: AppLoader.button(color: AppColors.surface),
                     )
                   : Row(
                       key: const ValueKey('label'),
@@ -100,7 +100,7 @@ class _UbPrimaryButtonState extends State<UbPrimaryButton> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (widget.icon != null) ...[
-                          Icon(widget.icon, size: 18, color: AppColors.ink),
+                          Icon(widget.icon, size: 18, color: AppColors.surface),
                           const SizedBox(width: 8),
                         ],
                         Flexible(
@@ -110,7 +110,7 @@ class _UbPrimaryButtonState extends State<UbPrimaryButton> {
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
+                              color: AppColors.surface,
                             ),
                           ),
                         ),

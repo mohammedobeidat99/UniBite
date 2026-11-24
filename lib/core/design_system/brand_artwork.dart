@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:unibite/core/design_system/app_colors.dart';
 import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/tokens.dart';
 
@@ -60,9 +61,9 @@ class SwooshHeroPainter extends CustomPainter {
       }
     }
 
-    // Speed lines sweeping horizontally on the upper right.
+    // Speed lines sweeping horizontally from the emblem.
     final speedPaint = Paint()
-      ..color = UniBiteColors.accent.withValues(alpha: 0.85)
+      ..color = AppColors.crimson.withValues(alpha: 0.85)
       ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round;
     final lineWidths = [36.0, 52.0, 28.0];
@@ -72,36 +73,28 @@ class SwooshHeroPainter extends CustomPainter {
       canvas.drawLine(Offset(startX, y), Offset(w - 22, y), speedPaint);
     }
 
-    // Signature UniBite orange swoosh ribbon along the hero-to-sheet seam.
-    final swooshPaint = Paint()
-      ..color = UniBiteColors.secondary
+    // Signature UniBite dual-color swoosh from the emblem:
+    // 1. Royal Blue lower ribbon
+    final blueSwooshPaint = Paint()
+      ..color = AppColors.royalBlue
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 10
+      ..strokeWidth = 6
       ..strokeCap = StrokeCap.round;
-    final swooshPath = Path()
-      ..moveTo(-10, h * 0.84)
-      ..quadraticBezierTo(w * 0.42, h * 0.99, w + 12, h * 0.72);
-    canvas.drawPath(swooshPath, swooshPaint);
+    final blueSwooshPath = Path()
+      ..moveTo(-12, h * 0.88)
+      ..quadraticBezierTo(w * 0.44, h * 1.02, w + 14, h * 0.76);
+    canvas.drawPath(blueSwooshPath, blueSwooshPaint);
 
-    // Soft sunny yellow leaf accent sparkle near the swoosh tip.
-    final leafCenter = Offset(w * 0.84, h * 0.72);
-    final leafPaint = Paint()..color = UniBiteColors.accent;
-    final leafPath = Path()
-      ..moveTo(leafCenter.dx - 8, leafCenter.dy + 4)
-      ..quadraticBezierTo(
-        leafCenter.dx - 4,
-        leafCenter.dy - 10,
-        leafCenter.dx + 10,
-        leafCenter.dy - 8,
-      )
-      ..quadraticBezierTo(
-        leafCenter.dx + 6,
-        leafCenter.dy + 8,
-        leafCenter.dx - 8,
-        leafCenter.dy + 4,
-      )
-      ..close();
-    canvas.drawPath(leafPath, leafPaint);
+    // 2. Vibrant Crimson Red signature ribbon
+    final redSwooshPaint = Paint()
+      ..color = AppColors.crimson
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 9
+      ..strokeCap = StrokeCap.round;
+    final redSwooshPath = Path()
+      ..moveTo(-10, h * 0.84)
+      ..quadraticBezierTo(w * 0.42, h * 0.97, w + 12, h * 0.71);
+    canvas.drawPath(redSwooshPath, redSwooshPaint);
   }
 
   @override

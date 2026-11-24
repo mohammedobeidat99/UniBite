@@ -20,7 +20,7 @@ class UniBiteLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(size * 0.22),
           child: Image.asset(
             'assets/images/logo.jpg',
             width: size,
@@ -30,13 +30,13 @@ class UniBiteLogo extends StatelessWidget {
               width: size,
               height: size,
               decoration: BoxDecoration(
-                color: UniBiteColors.primary100,
-                borderRadius: BorderRadius.circular(18),
+                color: UniBiteColors.primary900,
+                borderRadius: BorderRadius.circular(size * 0.22),
               ),
               child: Icon(
                 LucideIcons.utensils,
                 size: size * 0.55,
-                color: UniBiteColors.primary700,
+                color: UniBiteColors.secondary,
               ),
             ),
           ),
