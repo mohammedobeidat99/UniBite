@@ -4,7 +4,7 @@ import 'package:unibite/core/design_system/app_text.dart';
 
 export 'app_text.dart';
 
-/// Backward-compatible alias for typography builders.
+/// Backward-compatible alias class for typography builder.
 class UniBiteTypography {
   UniBiteTypography._();
 
@@ -16,8 +16,7 @@ class UniBiteTypography {
 
   static TextTheme buildTextTheme(String languageCode) {
     final family = fontFamilyFor(languageCode);
-    final fallbacks = AppText.fontFallbacksFor(languageCode);
-    final isAr = languageCode == 'ar';
+    final fallbacks = AppText.fontFallbacks(languageCode);
 
     TextStyle style({
       required double size,
@@ -36,18 +35,31 @@ class UniBiteTypography {
     }
 
     return TextTheme(
-      displayLarge: style(size: isAr ? 31 : 30, weight: FontWeight.w800, height: 38 / 30),
-      displaySmall: style(size: isAr ? 27 : 26, weight: FontWeight.w800, height: 34 / 26),
-      headlineMedium: style(size: isAr ? 23 : 22, weight: FontWeight.w700, height: 30 / 22),
-      titleLarge: style(size: isAr ? 23 : 22, weight: FontWeight.w700, height: 30 / 22),
-      titleMedium: style(size: isAr ? 19 : 18, weight: FontWeight.w700, height: 26 / 18),
-      titleSmall: style(size: isAr ? 17 : 16, weight: FontWeight.w700, height: 22 / 16),
-      bodyLarge: style(size: isAr ? 17 : 16, weight: isAr ? FontWeight.w600 : FontWeight.w500, height: 24 / 16),
-      bodyMedium: style(size: isAr ? 15 : 14, weight: isAr ? FontWeight.w500 : FontWeight.w400, color: AppColors.inkSoft, height: 22 / 14),
-      bodySmall: style(size: isAr ? 13 : 12, weight: FontWeight.w500, color: AppColors.inkSoft, height: 16 / 12),
-      labelLarge: style(size: isAr ? 17 : 16, weight: FontWeight.w700, height: 20 / 16),
-      labelMedium: style(size: isAr ? 13 : 12, weight: FontWeight.w700, color: AppColors.inkSoft),
-      labelSmall: style(size: isAr ? 13 : 12, weight: FontWeight.w500, color: AppColors.inkMuted),
+      displayLarge: style(size: 28, weight: FontWeight.w800, height: 36 / 28),
+      displaySmall: style(size: 24, weight: FontWeight.w700, height: 32 / 24),
+      headlineMedium: style(size: 22, weight: FontWeight.w700, height: 30 / 22),
+      titleLarge: style(size: 22, weight: FontWeight.w700, height: 30 / 22),
+      titleMedium: style(size: 18, weight: FontWeight.w700, height: 26 / 18),
+      titleSmall: style(size: 16, weight: FontWeight.w700, height: 22 / 16),
+      bodyLarge: style(size: 16, weight: FontWeight.w500, height: 24 / 16),
+      bodyMedium: style(size: 14, weight: FontWeight.w400, height: 22 / 14),
+      bodySmall: style(
+        size: 12,
+        weight: FontWeight.w500,
+        color: AppColors.inkMuted,
+        height: 16 / 12,
+      ),
+      labelLarge: style(size: 15, weight: FontWeight.w700, height: 20 / 15),
+      labelMedium: style(
+        size: 12,
+        weight: FontWeight.w700,
+        color: AppColors.inkMuted,
+      ),
+      labelSmall: style(
+        size: 12,
+        weight: FontWeight.w500,
+        color: AppColors.inkMuted,
+      ),
     );
   }
 }

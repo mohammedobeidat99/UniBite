@@ -53,10 +53,7 @@ class _StudentShellScreenState extends ConsumerState<StudentShellScreen> {
     final l10n = context.l10n;
     final student = ref.watch(currentUserProvider);
     if (student == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.green50,
-        body: SizedBox.shrink(),
-      );
+      return const Scaffold(body: SizedBox.shrink());
     }
 
     final cart = ref.watch(cartProvider);
@@ -655,80 +652,156 @@ class _StudentSettingsTab extends ConsumerWidget {
         100,
       ),
       children: [
-        Card(
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: UniBiteColors.primary100,
-              child: const Icon(
-                LucideIcons.user,
-                color: UniBiteColors.primary700,
+        UbCard(
+          padding: const EdgeInsets.all(AppSpacing.md12),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppColors.green100,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  LucideIcons.user,
+                  color: AppColors.green700,
+                  size: 24,
+                ),
               ),
-            ),
-            title: Text(
-              student.name,
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-            subtitle: Text('${student.email}\n${l10n.roleLabel(student.role)}'),
-            isThreeLine: true,
-          ),
-        ),
-        const SizedBox(height: UniBiteTokens.s12),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(UniBiteTokens.cardPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.currentCampusLabel,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 6),
-                Text(uni?.name ?? ''),
-                Text(
-                  campus != null ? '${campus.name} — ${campus.location}' : '',
-                  style: const TextStyle(color: UniBiteColors.inkMuted),
-                ),
-                const SizedBox(height: 12),
-                UbSecondaryButton(
-                  onPressed: () => context.go('/onboarding'),
-                  icon: LucideIcons.arrowLeftRight,
-                  label: l10n.changeCampusButton,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: UniBiteTokens.s12),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(UniBiteTokens.cardPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.languageLabel,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 10),
-                SegmentedButton<String>(
-                  segments: [
-                    ButtonSegment<String>(
-                      value: 'en',
-                      label: Text(l10n.englishLabel),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      student.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                        color: AppColors.ink,
+                      ),
                     ),
-                    ButtonSegment<String>(
-                      value: 'ar',
-                      label: Text(l10n.arabicLabel),
+                    const SizedBox(height: 2),
+                    Text(
+                      student.email,
+                      style: const TextStyle(
+                        color: AppColors.inkMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    UbStatusBadge(
+                      label: l10n.roleLabel(student.role),
+                      backgroundColor: AppColors.green100,
+                      textColor: AppColors.green700,
                     ),
                   ],
-                  selected: {locale.languageCode},
-                  onSelectionChanged: (sel) {
-                    ref.read(localeProvider.notifier).setLocale(sel.first);
-                  },
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: UniBiteTokens.s12),
+        UbCard(
+          padding: const EdgeInsets.all(AppSpacing.lg16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    LucideIcons.mapPin,
+                    size: 18,
+                    color: AppColors.green700,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.currentCampusLabel,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.green50,
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  border: Border.all(color: AppColors.outline),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      uni?.name ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    if (campus != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${campus.name} — ${campus.location}',
+                        style: const TextStyle(
+                          color: AppColors.inkMuted,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              UbSecondaryButton(
+                onPressed: () => context.go('/onboarding'),
+                icon: LucideIcons.arrowLeftRight,
+                label: l10n.changeCampusButton,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: UniBiteTokens.s12),
+        UbCard(
+          padding: const EdgeInsets.all(AppSpacing.lg16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    LucideIcons.languages,
+                    size: 18,
+                    color: AppColors.green700,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.languageLabel,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              UbSegmentedControl<String>(
+                selectedValue: locale.languageCode,
+                options: [
+                  ('en', l10n.englishLabel, LucideIcons.globe),
+                  ('ar', l10n.arabicLabel, LucideIcons.globe),
+                ],
+                onChanged: (lang) {
+                  ref.read(localeProvider.notifier).setLocale(lang);
+                },
+              ),
+            ],
           ),
         ),
         const SizedBox(height: UniBiteTokens.s16),
@@ -736,8 +809,8 @@ class _StudentSettingsTab extends ConsumerWidget {
           isDanger: true,
           onPressed: () async {
             ref.read(cartProvider.notifier).clear();
-            await ref.read(authRepositoryProvider).logout();
             if (context.mounted) context.go('/login');
+            await ref.read(authRepositoryProvider).logout();
           },
           icon: LucideIcons.logOut,
           label: l10n.logoutButton,

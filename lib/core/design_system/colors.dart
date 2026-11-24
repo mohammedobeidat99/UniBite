@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unibite/core/design_system/app_colors.dart';
 
-export 'app_colors.dart';
-
-/// Backward-compatible alias for [AppColors].
+/// Backward-compatible alias class for [AppColors].
 class UniBiteColors {
   UniBiteColors._();
 
@@ -15,10 +13,9 @@ class UniBiteColors {
 
   static const Color surface = AppColors.surface;
   static const Color ink = AppColors.ink;
-  static const Color inkSoft = AppColors.inkSoft;
   static const Color inkMuted = AppColors.inkMuted;
   static const Color border = AppColors.outline;
-  static const Color completedMuted = AppColors.statusCompleted;
+  static const Color completedMuted = AppColors.completedMuted;
 
   static const Color secondary = AppColors.orange;
   static const Color secondaryPressed = AppColors.orangePressed;
@@ -33,6 +30,6 @@ class UniBiteColors {
   static const Color dangerSoft = AppColors.dangerSoft;
   static const Color dangerText = AppColors.dangerText;
 
-  static const Color warning = AppColors.yellow;
-  static const Color success = AppColors.green500;
+  static const Color warning = AppColors.warning;
+  static const Color success = AppColors.success;
 }

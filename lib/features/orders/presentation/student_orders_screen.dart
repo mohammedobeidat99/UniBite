@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
-import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
@@ -52,21 +50,21 @@ class StudentOrdersScreen extends ConsumerWidget {
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(
-            UniBiteTokens.screenPadding,
-            UniBiteTokens.s16,
-            UniBiteTokens.screenPadding,
+            AppSpacing.lg16,
+            AppSpacing.lg16,
+            AppSpacing.lg16,
             100,
           ),
           children: [
             if (activeOrders.isNotEmpty) ...[
-              Text(
-                l10n.activeOrdersSection,
-                style: Theme.of(context).textTheme.titleMedium,
+              UbSectionHeader(
+                title: l10n.activeOrdersSection,
+                badgeText: '${activeOrders.length}',
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               ...activeOrders.map(
                 (order) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 14),
                   child: _StudentOrderCard(
                     order: order,
                     cafeteriaName: cafeNames[order.cafeteriaId] ?? '',
@@ -74,17 +72,14 @@ class StudentOrdersScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
             ],
             if (pastOrders.isNotEmpty) ...[
-              Text(
-                l10n.pastOrdersSection,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 10),
+              UbSectionHeader(title: l10n.pastOrdersSection),
+              const SizedBox(height: 12),
               ...pastOrders.map(
                 (order) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 14),
                   child: _StudentOrderCard(
                     order: order,
                     cafeteriaName: cafeNames[order.cafeteriaId] ?? '',
@@ -116,19 +111,20 @@ class _StudentOrderCard extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
         title: Text(l10n.cancelOrderButton),
         content: Text(l10n.cancelOrderConfirm),
         actions: [
-          TextButton(
+          UbGhostButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: UniBiteColors.danger,
-            ),
+          UbSecondaryButton(
+            isDanger: true,
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.confirm),
+            label: l10n.confirm,
           ),
         ],
       ),
@@ -152,159 +148,205 @@ class _StudentOrderCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final (Color badgeBg, Color badgeFg) = switch (order.status) {
-      OrderStatus.pending => (UniBiteColors.accentSoft, UniBiteColors.onAccent),
+      OrderStatus.pending => (AppColors.yellow, AppColors.onYellow),
       OrderStatus.accepted || OrderStatus.preparing => (
-        UniBiteColors.secondarySoft,
-        UniBiteColors.secondaryText,
+        AppColors.orangeSoft,
+        AppColors.orangeText,
       ),
-      OrderStatus.ready => (UniBiteColors.primary100, UniBiteColors.primary700),
+      OrderStatus.ready => (AppColors.green100, AppColors.green700),
       OrderStatus.completed => (
-        UniBiteColors.primary50,
-        UniBiteColors.completedMuted,
+        AppColors.green50,
+        AppColors.inkMuted,
       ),
       OrderStatus.rejected || OrderStatus.cancelled => (
-        UniBiteColors.dangerSoft,
-        UniBiteColors.dangerText,
+        AppColors.dangerSoft,
+        AppColors.dangerText,
       ),
     };
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(UniBiteTokens.cardPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+    return UbCard(
+      padding: const EdgeInsets.all(AppSpacing.lg16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.orderNumberLabel(order.orderNumber),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17,
+                        color: AppColors.green900,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$cafeteriaName • ${DateFormat.yMd().add_Hm().format(order.createdAt)}',
+                      style: const TextStyle(
+                        color: AppColors.inkMuted,
+                        fontSize: 12.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              UbStatusBadge(
+                label: l10n.orderStatusLabel(order.status),
+                backgroundColor: badgeBg,
+                textColor: badgeFg,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            l10n.orderStatusPlainLabel(order.status),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 13.5,
+              color: badgeFg,
+            ),
+          ),
+          if (order.status.isActive) ...[
+            const SizedBox(height: 14),
+            UbOrderStatusStepper(status: order.status),
+          ],
+          if (order.status == OrderStatus.rejected &&
+              order.rejectReason != null) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.dangerSoft,
+                borderRadius: BorderRadius.circular(AppRadius.input),
+                border: Border.all(color: AppColors.danger.withValues(alpha: 0.2)),
+              ),
+              child: Text(
+                l10n.rejectReasonLabel(order.rejectReason!),
+                style: const TextStyle(
+                  color: AppColors.dangerText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ],
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1, color: AppColors.outline),
+          ),
+          ...order.items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${item.qty}× ${item.name}${item.note != null ? ' (${item.note})' : ''}',
+                      style: const TextStyle(
+                        color: AppColors.ink,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${item.subtotal.toStringAsFixed(2)} ${l10n.currencyJod}',
+                    style: const TextStyle(
+                      color: AppColors.inkSoft,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.totalLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                  color: AppColors.ink,
+                ),
+              ),
+              Text(
+                '${order.total.toStringAsFixed(2)} ${l10n.currencyJod}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: AppColors.orangeText,
+                ),
+              ),
+            ],
+          ),
+          if (order.status.isActive) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14),
+              child: Divider(height: 1, color: AppColors.outline),
+            ),
             Row(
               children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.input),
+                    border: Border.all(color: AppColors.outline),
+                    boxShadow: AppShadow.soft,
+                  ),
+                  child: QrImageView(
+                    data: order.qrCode,
+                    size: 80,
+                    backgroundColor: AppColors.surface,
+                  ),
+                ),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.orderNumberLabel(order.orderNumber),
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(color: UniBiteColors.primary700),
+                        l10n.pickupQrCodeTitle,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: AppColors.ink,
+                        ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
-                        '$cafeteriaName • ${DateFormat.yMd().add_Hm().format(order.createdAt)}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        order.qrCode,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.inkMuted,
+                          fontFamily: 'monospace',
+                        ),
                       ),
+                      if (order.status == OrderStatus.pending) ...[
+                        const SizedBox(height: 10),
+                        UbSecondaryButton(
+                          isDanger: true,
+                          onPressed: () => _cancelOrder(context, ref),
+                          icon: LucideIcons.xCircle,
+                          label: l10n.cancelOrderButton,
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                StatusBadge(
-                  label: l10n.orderStatusLabel(order.status),
-                  backgroundColor: badgeBg,
-                  textColor: badgeFg,
-                ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.orderStatusPlainLabel(order.status),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: badgeFg,
-              ),
-            ),
-            if (order.status.isActive) ...[
-              const SizedBox(height: 12),
-              UbOrderStatusStepper(status: order.status),
-            ],
-            if (order.status == OrderStatus.rejected &&
-                order.rejectReason != null) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: UniBiteColors.dangerSoft,
-                  borderRadius: BorderRadius.circular(UniBiteTokens.r12),
-                ),
-                child: Text(
-                  l10n.rejectReasonLabel(order.rejectReason!),
-                  style: const TextStyle(
-                    color: UniBiteColors.dangerText,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-            const Divider(height: 20),
-            ...order.items.map(
-              (item) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${item.qty}× ${item.name}${item.note != null ? ' (${item.note})' : ''}',
-                      ),
-                    ),
-                    Text(
-                      '${item.subtotal.toStringAsFixed(2)} ${l10n.currencyJod}',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.totalLabel,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  '${order.total.toStringAsFixed(2)} ${l10n.currencyJod}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: UniBiteColors.secondaryText,
-                  ),
-                ),
-              ],
-            ),
-            if (order.status.isActive) ...[
-              const Divider(height: 24),
-              Row(
-                children: [
-                  QrImageView(
-                    data: order.qrCode,
-                    size: 92,
-                    backgroundColor: UniBiteColors.surface,
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.pickupQrCodeTitle,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          order.qrCode,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        if (order.status == OrderStatus.pending) ...[
-                          const SizedBox(height: 10),
-                          UbSecondaryButton(
-                            isDanger: true,
-                            onPressed: () => _cancelOrder(context, ref),
-                            icon: LucideIcons.xCircle,
-                            label: l10n.cancelOrderButton,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }

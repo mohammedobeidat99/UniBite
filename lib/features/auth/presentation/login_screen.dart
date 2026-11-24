@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -90,6 +91,46 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     setState(() => _errorMessage = null);
   }
 
+  Widget _buildRoleChip({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.green50,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            border: Border.all(color: AppColors.outline),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 15, color: AppColors.green700),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -137,26 +178,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  AnimatedScale(
-                                    scale: keyboardOpen ? 0.78 : 1.0,
-                                    duration: UniBiteTokens.normal,
-                                    child: const UniBiteLogo(size: 46),
+                            Row(
+                              children: [
+                                AnimatedScale(
+                                  scale: keyboardOpen ? 0.78 : 1.0,
+                                  duration: UniBiteTokens.normal,
+                                  child: const UniBiteLogo(size: 46),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  l10n.appTitle,
+                                  style: textTheme.titleLarge?.copyWith(
+                                    color: UniBiteColors.surface,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Flexible(
-                                    child: Text(
-                                      l10n.appTitle,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: textTheme.titleLarge?.copyWith(
-                                        color: UniBiteColors.surface,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                             TextButton.icon(
                               onPressed: () => ref
@@ -327,46 +363,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               spacing: 8,
                               runSpacing: 8,
                               children: [
-                                ActionChip(
-                                  avatar: const Icon(
-                                    LucideIcons.graduationCap,
-                                    size: 16,
-                                  ),
-                                  label: Text(l10n.roleStudent),
-                                  onPressed: () => _fillDemoCredentials(
+                                _buildRoleChip(
+                                  icon: LucideIcons.graduationCap,
+                                  label: l10n.roleStudent,
+                                  onTap: () => _fillDemoCredentials(
                                     'student@just.edu.jo',
                                     'Student@123',
                                   ),
                                 ),
-                                ActionChip(
-                                  avatar: const Icon(
-                                    LucideIcons.store,
-                                    size: 16,
-                                  ),
-                                  label: Text(l10n.roleCafeteriaAdmin),
-                                  onPressed: () => _fillDemoCredentials(
+                                _buildRoleChip(
+                                  icon: LucideIcons.store,
+                                  label: l10n.roleCafeteriaAdmin,
+                                  onTap: () => _fillDemoCredentials(
                                     'admin.olive@just.edu.jo',
                                     'Cafe@123',
                                   ),
                                 ),
-                                ActionChip(
-                                  avatar: const Icon(
-                                    LucideIcons.chefHat,
-                                    size: 16,
-                                  ),
-                                  label: Text(l10n.roleCafeteriaStaff),
-                                  onPressed: () => _fillDemoCredentials(
+                                _buildRoleChip(
+                                  icon: LucideIcons.chefHat,
+                                  label: l10n.roleCafeteriaStaff,
+                                  onTap: () => _fillDemoCredentials(
                                     'staff.olive@just.edu.jo',
                                     'Staff@123',
                                   ),
                                 ),
-                                ActionChip(
-                                  avatar: const Icon(
-                                    LucideIcons.shieldCheck,
-                                    size: 16,
-                                  ),
-                                  label: Text(l10n.roleSystemAdmin),
-                                  onPressed: () => _fillDemoCredentials(
+                                _buildRoleChip(
+                                  icon: LucideIcons.shieldCheck,
+                                  label: l10n.roleSystemAdmin,
+                                  onTap: () => _fillDemoCredentials(
                                     'sysadmin@unibite.edu',
                                     'Admin@123',
                                   ),
@@ -400,8 +424,12 @@ class _ErrorBanner extends StatelessWidget {
     final box = Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: UniBiteColors.dangerSoft,
-        borderRadius: BorderRadius.circular(UniBiteTokens.r12),
+        color: AppColors.dangerSoft,
+        borderRadius: BorderRadius.circular(AppRadius.input),
+        border: Border.all(
+          color: AppColors.dangerText.withValues(alpha: 0.22),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [

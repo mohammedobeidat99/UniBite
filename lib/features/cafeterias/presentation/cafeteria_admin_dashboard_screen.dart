@@ -7,9 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:unibite/core/database/seed_data.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
-import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
@@ -45,10 +43,7 @@ class _CafeteriaAdminDashboardScreenState
     final l10n = context.l10n;
     final actor = ref.watch(currentUserProvider);
     if (actor == null || actor.cafeteriaId == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.green50,
-        body: SizedBox.shrink(),
-      );
+      return const Scaffold(body: SizedBox.shrink());
     }
 
     final cafeteriaId = actor.cafeteriaId!;
@@ -122,16 +117,16 @@ class _CafeteriaAdminDashboardScreenState
           if (cafe != null && isWide) ...[
             UbOpenClosedPill(isOpen: cafe.isOpenAt(DateTime.now())),
             const SizedBox(width: 8),
-            StatusBadge(
+            UbStatusBadge(
               label: l10n.liveConnectedBadge,
-              backgroundColor: UniBiteColors.primary100,
-              textColor: UniBiteColors.primary700,
+              backgroundColor: AppColors.green100,
+              textColor: AppColors.green700,
             ),
             const SizedBox(width: 8),
-            StatusBadge(
+            UbStatusBadge(
               label: l10n.screenAwakeBadge,
-              backgroundColor: UniBiteColors.primary50,
-              textColor: UniBiteColors.inkMuted,
+              backgroundColor: AppColors.green50,
+              textColor: AppColors.inkMuted,
             ),
             const SizedBox(width: 6),
           ],
@@ -156,20 +151,20 @@ class _CafeteriaAdminDashboardScreenState
                 NavigationRail(
                   selectedIndex: _selectedTab,
                   extended: MediaQuery.sizeOf(context).width >= 1160,
-                  backgroundColor: UniBiteColors.primary900,
-                  indicatorColor: UniBiteColors.secondary,
+                  backgroundColor: AppColors.green900,
+                  indicatorColor: AppColors.orange,
                   selectedIconTheme: const IconThemeData(
-                    color: UniBiteColors.surface,
+                    color: AppColors.ink,
                   ),
                   unselectedIconTheme: const IconThemeData(
-                    color: UniBiteColors.primary100,
+                    color: AppColors.green100,
                   ),
                   selectedLabelTextStyle: const TextStyle(
-                    color: UniBiteColors.surface,
+                    color: AppColors.ink,
                     fontWeight: FontWeight.w700,
                   ),
                   unselectedLabelTextStyle: const TextStyle(
-                    color: UniBiteColors.primary100,
+                    color: AppColors.green100,
                     fontWeight: FontWeight.w500,
                   ),
                   onDestinationSelected: (idx) =>
@@ -233,8 +228,8 @@ class _MenuManagerTabState extends ConsumerState<_MenuManagerTab> {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: null,
         onPressed: () => _openMealDialog(context, ref),
-        backgroundColor: UniBiteColors.secondary,
-        foregroundColor: UniBiteColors.surface,
+        backgroundColor: AppColors.orange,
+        foregroundColor: AppColors.ink,
         icon: const Icon(LucideIcons.plus),
         label: Text(l10n.addMealButton),
       ),
@@ -298,7 +293,7 @@ class _MenuManagerTabState extends ConsumerState<_MenuManagerTab> {
                               '${l10n.localizedMealCategory(meal.category)} • ${meal.price.toStringAsFixed(2)} ${l10n.currencyJod}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: UniBiteColors.secondaryText,
+                                color: AppColors.orangeText,
                               ),
                             ),
                             if (meal.description.isNotEmpty)
@@ -342,7 +337,7 @@ class _MenuManagerTabState extends ConsumerState<_MenuManagerTab> {
                               },
                               icon: const Icon(
                                 LucideIcons.trash2,
-                                color: UniBiteColors.dangerText,
+                                color: AppColors.dangerText,
                               ),
                             ),
                           ],
@@ -448,7 +443,7 @@ class _MenuManagerTabState extends ConsumerState<_MenuManagerTab> {
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: imagePath == preset
-                                        ? UniBiteColors.secondary
+                                        ? AppColors.orange
                                         : Colors.transparent,
                                     width: 2,
                                   ),
@@ -667,7 +662,7 @@ class _WorkingHoursTabState extends ConsumerState<_WorkingHoursTab> {
         final isOpenNow = cafe.isOpenAt(DateTime.now());
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(UniBiteTokens.screenPadding),
+          padding: const EdgeInsets.all(AppSpacing.lg16),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
@@ -796,8 +791,8 @@ class _StaffAccountsTab extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: null,
         onPressed: () => _openAddStaffDialog(context, ref),
-        backgroundColor: UniBiteColors.secondary,
-        foregroundColor: UniBiteColors.surface,
+        backgroundColor: AppColors.orange,
+        foregroundColor: AppColors.ink,
         icon: const Icon(LucideIcons.userPlus),
         label: Text(l10n.addStaffButton),
       ),
@@ -815,20 +810,20 @@ class _StaffAccountsTab extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: UniBiteColors.primary100,
-                  borderRadius: BorderRadius.circular(UniBiteTokens.r12),
+                  color: AppColors.green100,
+                  borderRadius: BorderRadius.circular(AppRadius.input),
                 ),
                 child: Row(
                   children: [
                     const Icon(
                       LucideIcons.info,
-                      color: UniBiteColors.primary700,
+                      color: AppColors.green700,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         l10n.staffPermissionNote,
-                        style: const TextStyle(color: UniBiteColors.primary700),
+                        style: const TextStyle(color: AppColors.green700),
                       ),
                     ),
                   ],
@@ -844,10 +839,10 @@ class _StaffAccountsTab extends ConsumerWidget {
                     child: Card(
                       child: ListTile(
                         leading: const CircleAvatar(
-                          backgroundColor: UniBiteColors.secondarySoft,
+                          backgroundColor: AppColors.orangeSoft,
                           child: Icon(
                             LucideIcons.chefHat,
-                            color: UniBiteColors.secondaryText,
+                            color: AppColors.orangeText,
                           ),
                         ),
                         title: Text(
@@ -903,7 +898,7 @@ class _StaffAccountsTab extends ConsumerWidget {
                   if (dialogError != null) ...[
                     Text(
                       dialogError!,
-                      style: const TextStyle(color: UniBiteColors.dangerText),
+                      style: const TextStyle(color: AppColors.dangerText),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -1016,14 +1011,14 @@ class _OrderHistoryTab extends ConsumerWidget {
                   '${DateFormat.yMd().add_Hm().format(order.createdAt)} • ${l10n.orderTypeLabel(order.type)}'
                   '${order.rejectReason != null ? '\n${l10n.rejectReasonLabel(order.rejectReason!)}' : ''}',
                 ),
-                trailing: StatusBadge(
+                trailing: UbStatusBadge(
                   label: l10n.orderStatusLabel(order.status),
                   backgroundColor: order.status == OrderStatus.completed
-                      ? UniBiteColors.primary50
-                      : UniBiteColors.dangerSoft,
+                      ? AppColors.green50
+                      : AppColors.dangerSoft,
                   textColor: order.status == OrderStatus.completed
-                      ? UniBiteColors.completedMuted
-                      : UniBiteColors.dangerText,
+                      ? AppColors.inkMuted
+                      : AppColors.dangerText,
                 ),
               ),
             );

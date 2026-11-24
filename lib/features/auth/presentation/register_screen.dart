@@ -480,20 +480,24 @@ class _StepBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = active
+        ? AppColors.orange
+        : (done ? AppColors.green500 : AppColors.green700);
+    final fgColor = active ? AppColors.ink : AppColors.surface;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: active
-            ? UniBiteColors.secondary
-            : (done ? UniBiteColors.primary500 : UniBiteColors.primary700),
-        borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        boxShadow: active ? AppShadow.soft : null,
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: UniBiteColors.surface,
+        style: TextStyle(
+          color: fgColor,
           fontSize: 12,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );

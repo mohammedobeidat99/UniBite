@@ -432,14 +432,22 @@ class _MealCard extends StatelessWidget {
                   children: [
                     Text(
                       meal.name,
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: const TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       meal.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.inkSoft,
+                        height: 1.35,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -448,9 +456,9 @@ class _MealCard extends StatelessWidget {
                         Text(
                           '${meal.price.toStringAsFixed(2)} ${l10n.currencyJod}',
                           style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            color: UniBiteColors.secondaryText,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            color: AppColors.orangeText,
                           ),
                         ),
                         if (onQuickAdd != null)

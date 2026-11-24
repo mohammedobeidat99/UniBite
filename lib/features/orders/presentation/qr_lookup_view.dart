@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
-import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
-import 'package:unibite/core/widgets/state_views.dart';
 import 'package:unibite/features/auth/domain/entities/app_user.dart';
 import 'package:unibite/features/orders/domain/entities/order.dart';
 import 'package:unibite/features/orders/domain/entities/order_status.dart';
@@ -106,7 +103,7 @@ class _QrLookupViewState extends ConsumerState<QrLookupView> {
         .toList();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(UniBiteTokens.screenPadding),
+      padding: const EdgeInsets.all(AppSpacing.lg16),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
@@ -115,7 +112,11 @@ class _QrLookupViewState extends ConsumerState<QrLookupView> {
             children: [
               Text(
                 l10n.qrLookupTitle,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                  color: AppColors.green900,
+                ),
               ),
               const SizedBox(height: 12),
               Row(
@@ -140,7 +141,7 @@ class _QrLookupViewState extends ConsumerState<QrLookupView> {
                   l10n.quickReadyOrdersLabel,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: UniBiteColors.inkMuted,
+                    color: AppColors.inkMuted,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -160,98 +161,111 @@ class _QrLookupViewState extends ConsumerState<QrLookupView> {
               ],
               const SizedBox(height: 20),
               if (_error != null)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      _error!,
-                      style: const TextStyle(
-                        color: UniBiteColors.dangerText,
-                        fontWeight: FontWeight.w600,
-                      ),
+                UbCard(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    _error!,
+                    style: const TextStyle(
+                      color: AppColors.dangerText,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               if (_foundOrder != null)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              l10n.orderNumberLabel(_foundOrder!.orderNumber),
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(color: UniBiteColors.primary700),
+                UbCard(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            l10n.orderNumberLabel(_foundOrder!.orderNumber),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18,
+                              color: AppColors.green900,
                             ),
-                            const Spacer(),
-                            StatusBadge(
-                              label: l10n.orderStatusLabel(_foundOrder!.status),
-                              backgroundColor: UniBiteColors.primary100,
-                              textColor: UniBiteColors.primary700,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        Center(
+                          ),
+                          const Spacer(),
+                          UbStatusBadge(
+                            label: l10n.orderStatusLabel(_foundOrder!.status),
+                            backgroundColor: AppColors.green100,
+                            textColor: AppColors.green700,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(AppRadius.input),
+                            border: Border.all(color: AppColors.outline),
+                            boxShadow: AppShadow.soft,
+                          ),
                           child: QrImageView(
                             data: _foundOrder!.qrCode,
                             size: 130,
-                            backgroundColor: UniBiteColors.surface,
+                            backgroundColor: AppColors.surface,
                           ),
                         ),
-                        const Divider(height: 24),
-                        ..._foundOrder!.items.map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text('${item.qty}× ${item.name}'),
-                                ),
-                                Text(
-                                  '${item.subtotal.toStringAsFixed(2)} ${l10n.currencyJod}',
-                                ),
-                              ],
-                            ),
+                      ),
+                      const Divider(height: 24),
+                      ..._foundOrder!.items.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text('${item.qty}× ${item.name}'),
+                              ),
+                              Text(
+                                '${item.subtotal.toStringAsFixed(2)} ${l10n.currencyJod}',
+                              ),
+                            ],
                           ),
                         ),
-                        const Divider(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              l10n.totalLabel,
-                              style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const Divider(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.totalLabel,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: AppColors.ink,
                             ),
-                            Text(
-                              '${_foundOrder!.total.toStringAsFixed(2)} ${l10n.currencyJod}',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: UniBiteColors.secondaryText,
-                                  ),
+                          ),
+                          Text(
+                            '${_foundOrder!.total.toStringAsFixed(2)} ${l10n.currencyJod}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 17,
+                              color: AppColors.orangeText,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.paymentMethodCashOnly,
-                          style: const TextStyle(color: UniBiteColors.inkMuted),
-                        ),
-                        if (_foundOrder!.status == OrderStatus.ready) ...[
-                          const SizedBox(height: 16),
-                          UbPrimaryButton(
-                            onPressed: () => _completeOrder(_foundOrder!),
-                            backgroundColor: UniBiteColors.primary500,
-                            icon: LucideIcons.checkCircle2,
-                            label: l10n.completePickupButton,
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.paymentMethodCashOnly,
+                        style: const TextStyle(color: AppColors.inkMuted),
+                      ),
+                      if (_foundOrder!.status == OrderStatus.ready) ...[
+                        const SizedBox(height: 16),
+                        UbPrimaryButton(
+                          onPressed: () => _completeOrder(_foundOrder!),
+                          backgroundColor: AppColors.green700,
+                          icon: LucideIcons.checkCircle2,
+                          label: l10n.completePickupButton,
+                        ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
             ],

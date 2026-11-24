@@ -7,11 +7,9 @@ import 'package:unibite/core/design_system/app_loader.dart';
 import 'package:unibite/core/design_system/app_spacing.dart';
 import 'package:unibite/core/design_system/app_text.dart';
 import 'package:unibite/core/design_system/brand_artwork.dart';
+import 'package:unibite/core/design_system/colors.dart';
+import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
-import 'package:unibite/core/widgets/meal_image_widget.dart';
-import 'package:unibite/features/cafeterias/domain/entities/cafeteria.dart';
-import 'package:unibite/features/meals/domain/entities/meal.dart';
-import 'package:unibite/features/orders/domain/entities/order.dart';
 import 'package:unibite/features/orders/domain/entities/order_status.dart';
 
 export 'app_colors.dart';
@@ -19,148 +17,924 @@ export 'app_loader.dart';
 export 'app_spacing.dart';
 export 'app_text.dart';
 
-// =============================================================================
-// 1. AppScaffold & AppTopBar
-// =============================================================================
-
-/// Page scaffold enforcing [AppColors.green50] background, safe areas, and optional width constraint.
-class AppScaffold extends StatelessWidget {
-  const AppScaffold({
+/// Energy-orange pill primary CTA with press scale (`0.97`), haptic feedback,
+/// and smooth loading morph into a progress spinner.
+class UbPrimaryButton extends StatefulWidget {
+  /// Creates a [UbPrimaryButton] with [label] and optional [onPressed].
+  const UbPrimaryButton({
     super.key,
-    required this.body,
-    this.appBar,
-    this.bottomNavigationBar,
-    this.floatingActionButton,
-    this.maxWidth = 1440,
-    this.backgroundColor = AppColors.green50,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.backgroundColor = UniBiteColors.secondary,
   });
 
-  final Widget body;
-  final PreferredSizeWidget? appBar;
-  final Widget? bottomNavigationBar;
-  final Widget? floatingActionButton;
-  final double maxWidth;
+  /// Bold uppercase-friendly button text (15 sp bold for WCAG AA compliance).
+  final String label;
+
+  /// Tap handler; when `null`, renders the disabled state.
+  final VoidCallback? onPressed;
+
+  /// Whether the button shows an inline loading spinner and locks input.
+  final bool isLoading;
+
+  /// Optional leading Lucide icon.
+  final IconData? icon;
+
+  /// Button fill color, defaulting to [UniBiteColors.secondary].
   final Color backgroundColor;
 
   @override
+  State<UbPrimaryButton> createState() => _UbPrimaryButtonState();
+}
+
+class _UbPrimaryButtonState extends State<UbPrimaryButton> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: appBar,
-      floatingActionButton: floatingActionButton,
-      bottomNavigationBar: bottomNavigationBar,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          child: body,
+    final enabled = widget.onPressed != null && !widget.isLoading;
+    final reduceMotion = UniBiteTokens.reduceMotion(context);
+
+    return GestureDetector(
+      onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
+      onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
+      onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
+      child: AnimatedScale(
+        scale: (_pressed && !reduceMotion) ? 0.97 : 1.0,
+        duration: UniBiteTokens.fast,
+        curve: UniBiteTokens.easeOut,
+        child: SizedBox(
+          height: 52,
+          child: ElevatedButton(
+            onPressed: enabled
+                ? () {
+                    HapticFeedback.lightImpact();
+                    widget.onPressed?.call();
+                  }
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _pressed
+                  ? UniBiteColors.secondaryPressed
+                  : widget.backgroundColor,
+              disabledBackgroundColor: UniBiteColors.primary100,
+              disabledForegroundColor: UniBiteColors.inkMuted,
+              foregroundColor: AppColors.ink,
+              shape: const StadiumBorder(),
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+            ),
+            child: AnimatedSwitcher(
+              duration: UniBiteTokens.fast,
+              child: widget.isLoading
+                  ? const SizedBox(
+                      key: ValueKey('loading'),
+                      width: 22,
+                      height: 22,
+                      child: AppLoader.button(color: AppColors.ink),
+                    )
+                  : Row(
+                      key: const ValueKey('label'),
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (widget.icon != null) ...[
+                          Icon(widget.icon, size: 18, color: AppColors.ink),
+                          const SizedBox(width: 8),
+                        ],
+                        Flexible(
+                          child: Text(
+                            widget.label,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-/// Custom top bar adhering strictly to design tokens.
-class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppTopBar({
+/// Secondary campus-green outlined pill button.
+class UbSecondaryButton extends StatelessWidget {
+  /// Creates a [UbSecondaryButton].
+  const UbSecondaryButton({
     super.key,
-    required this.title,
-    this.leading,
-    this.actions,
-    this.backgroundColor = AppColors.surface,
-    this.showBackButton = false,
-    this.onBackPressed,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.isDanger = false,
   });
 
-  final String title;
-  final Widget? leading;
-  final List<Widget>? actions;
-  final Color backgroundColor;
-  final bool showBackButton;
-  final VoidCallback? onBackPressed;
+  /// Button text.
+  final String label;
 
-  @override
-  Size get preferredSize => const Size.fromHeight(60);
+  /// Tap handler.
+  final VoidCallback? onPressed;
+
+  /// Optional leading icon.
+  final IconData? icon;
+
+  /// Whether to style the outline using [UniBiteColors.dangerText].
+  final bool isDanger;
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: backgroundColor,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      centerTitle: false,
-      leading: leading ??
-          (showBackButton
-              ? IconButton(
-                  icon: const Icon(LucideIcons.arrowLeft, size: 22, color: AppColors.green700),
-                  onPressed: onBackPressed ?? () => Navigator.of(context).maybePop(),
-                )
-              : null),
-      title: Text(
-        title,
-        style: AppText.h2(context),
+    final fg = isDanger ? UniBiteColors.dangerText : UniBiteColors.primary700;
+    return SizedBox(
+      height: 48,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: fg,
+          side: BorderSide(color: fg.withValues(alpha: 0.7)),
+          shape: const StadiumBorder(),
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 18),
+              const SizedBox(width: 8),
+            ],
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      actions: actions,
     );
   }
 }
 
-// =============================================================================
-// 2. SectionHeader & SectionDivider
-// =============================================================================
-
-class SectionHeader extends StatelessWidget {
-  const SectionHeader({
+/// Ghost text button with contrast-safe dark orange accent underline option.
+class UbGhostButton extends StatelessWidget {
+  /// Creates a [UbGhostButton].
+  const UbGhostButton({
     super.key,
-    required this.title,
-    this.actionText,
-    this.onActionTap,
-    this.padding = const EdgeInsets.only(bottom: AppSpacing.s12),
+    required this.label,
+    required this.onPressed,
+    this.underlinedOrange = false,
   });
 
-  final String title;
-  final String? actionText;
-  final VoidCallback? onActionTap;
-  final EdgeInsetsGeometry padding;
+  /// Button text.
+  final String label;
+
+  /// Tap handler.
+  final VoidCallback? onPressed;
+
+  /// Whether to highlight with [AppColors.orangeText].
+  final bool underlinedOrange;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              style: AppText.h2(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: underlinedOrange
+            ? AppColors.orangeText
+            : AppColors.green700,
+        minimumSize: const Size(48, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+          color: underlinedOrange ? AppColors.orangeText : AppColors.green700,
+        ),
+      ),
+    );
+  }
+}
+
+/// Compact pill showing Open (with sunny-yellow dot) or Closed status.
+class UbOpenClosedPill extends StatelessWidget {
+  /// Creates a [UbOpenClosedPill] displaying [isOpen] state.
+  const UbOpenClosedPill({super.key, required this.isOpen});
+
+  /// Whether the cafeteria is currently open.
+  final bool isOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Semantics(
+      label: isOpen ? l10n.open : l10n.closed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isOpen ? UniBiteColors.primary100 : UniBiteColors.dangerSoft,
+          borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+          border: Border.all(
+            color: (isOpen ? AppColors.green700 : AppColors.danger).withValues(
+              alpha: 0.18,
             ),
           ),
-          if (actionText != null && onActionTap != null)
-            GestureDetector(
-              onTap: onActionTap,
-              child: Text(
-                actionText!,
-                style: AppText.bodyM(context, color: AppColors.orangeText)
-                    .copyWith(fontWeight: FontWeight.w700),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isOpen ? UniBiteColors.accent : UniBiteColors.danger,
               ),
             ),
+            const SizedBox(width: 6),
+            Text(
+              isOpen ? l10n.open : l10n.closed,
+              style: TextStyle(
+                color: isOpen
+                    ? UniBiteColors.primary700
+                    : UniBiteColors.dangerText,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Enterprise pill status badge with crisp outline, rounded geometry, and optional icon.
+class UbStatusBadge extends StatelessWidget {
+  /// Creates a [UbStatusBadge].
+  const UbStatusBadge({
+    super.key,
+    required this.label,
+    required this.backgroundColor,
+    required this.textColor,
+    this.dotColor,
+    this.icon,
+  });
+
+  final String label;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color? dotColor;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(
+          color: textColor.withValues(alpha: 0.18),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dotColor != null) ...[
+            Container(
+              width: 7,
+              height: 7,
+              decoration: BoxDecoration(
+                color: dotColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: textColor),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.2,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-// =============================================================================
-// 3. AppCard
-// =============================================================================
+/// Backward-compatible alias for [UbStatusBadge].
+typedef StatusBadge = UbStatusBadge;
 
-class AppCard extends StatelessWidget {
-  const AppCard({
+/// Tactile quantity stepper with rolling animated counter and 48 dp touch targets.
+class UbQuantityStepper extends StatelessWidget {
+  /// Creates a [UbQuantityStepper].
+  const UbQuantityStepper({
+    super.key,
+    required this.quantity,
+    required this.onChanged,
+    this.minValue = 0,
+  });
+
+  /// Current numeric quantity.
+  final int quantity;
+
+  /// Callback invoked with the updated quantity.
+  final ValueChanged<int> onChanged;
+
+  /// Minimum permitted quantity (defaults to `0`).
+  final int minValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduceMotion = UniBiteTokens.reduceMotion(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: UniBiteColors.primary50,
+        borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+        border: Border.all(color: UniBiteColors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            onPressed: quantity > minValue
+                ? () {
+                    HapticFeedback.selectionClick();
+                    onChanged(quantity - 1);
+                  }
+                : null,
+            icon: Icon(
+              LucideIcons.minus,
+              size: 18,
+              color: quantity > minValue
+                  ? UniBiteColors.primary700
+                  : UniBiteColors.completedMuted,
+            ),
+          ),
+          SizedBox(
+            width: 28,
+            child: Center(
+              child: AnimatedSwitcher(
+                duration: reduceMotion ? Duration.zero : UniBiteTokens.fast,
+                transitionBuilder: (child, anim) => ScaleTransition(
+                  scale: anim,
+                  child: FadeTransition(opacity: anim, child: child),
+                ),
+                child: Text(
+                  '$quantity',
+                  key: ValueKey(quantity),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: UniBiteColors.ink,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              onChanged(quantity + 1);
+            },
+            icon: const Icon(
+              LucideIcons.plus,
+              size: 18,
+              color: UniBiteColors.secondaryText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sticky bottom cart bar sliding into view whenever the student cart has items.
+class UbStickyCartBar extends StatelessWidget {
+  /// Creates a [UbStickyCartBar].
+  const UbStickyCartBar({
+    super.key,
+    required this.itemCount,
+    required this.cafeteriaName,
+    required this.totalAmount,
+    required this.onTap,
+  });
+
+  /// Total quantity of meals currently in the cart.
+  final int itemCount;
+
+  /// Locked cafeteria name for the active cart.
+  final String cafeteriaName;
+
+  /// Total JOD price of the cart.
+  final double totalAmount;
+
+  /// Callback opening the Cart tab/view.
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final reduceMotion = UniBiteTokens.reduceMotion(context);
+    if (itemCount <= 0) return const SizedBox.shrink();
+
+    final bar = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: UniBiteColors.primary900,
+            borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+            boxShadow: UniBiteTokens.shadow2,
+          ),
+          child: Row(
+            children: [
+              AnimatedSwitcher(
+                duration: reduceMotion ? Duration.zero : UniBiteTokens.fast,
+                transitionBuilder: (child, anim) =>
+                    ScaleTransition(scale: anim, child: child),
+                child: Container(
+                  key: ValueKey(itemCount),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: UniBiteColors.accent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '$itemCount',
+                    style: const TextStyle(
+                      color: UniBiteColors.onAccent,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.navCart,
+                      style: const TextStyle(
+                        color: UniBiteColors.surface,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      cafeteriaName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: UniBiteColors.primary100,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: UniBiteColors.secondary,
+                  borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+                ),
+                child: Text(
+                  '${totalAmount.toStringAsFixed(2)} ${l10n.currencyJod}',
+                  style: const TextStyle(
+                    color: UniBiteColors.surface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (reduceMotion) return bar;
+    return bar
+        .animate()
+        .slideY(begin: 0.35, end: 0, duration: UniBiteTokens.normal)
+        .fadeIn(duration: UniBiteTokens.fast);
+  }
+}
+
+/// Destination descriptor for [UbFloatingPillNav].
+class UbNavDestination {
+  /// Creates a [UbNavDestination].
+  const UbNavDestination({
+    required this.icon,
+    required this.label,
+    this.badgeCount = 0,
+  });
+
+  /// Lucide icon rendered for this tab.
+  final IconData icon;
+
+  /// Localized tab label.
+  final String label;
+
+  /// Optional integer badge count shown when `> 0`.
+  final int badgeCount;
+}
+
+/// Floating pill-shaped mobile navigation bar with accessible 48 dp touch targets.
+class UbFloatingPillNav extends StatelessWidget {
+  /// Creates a [UbFloatingPillNav].
+  const UbFloatingPillNav({
+    super.key,
+    required this.selectedIndex,
+    required this.destinations,
+    required this.onSelected,
+  });
+
+  /// Active destination index.
+  final int selectedIndex;
+
+  /// Ordered navigation destinations.
+  final List<UbNavDestination> destinations;
+
+  /// Selection callback invoked with tapped tab index.
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: UniBiteColors.surface,
+            borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+            border: Border.all(color: UniBiteColors.border),
+            boxShadow: UniBiteTokens.shadow2,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(destinations.length, (i) {
+              final item = destinations[i];
+              final selected = i == selectedIndex;
+              return Expanded(
+                child: Semantics(
+                  button: true,
+                  selected: selected,
+                  label: item.label,
+                  child: InkWell(
+                    onTap: () => onSelected(i),
+                    borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+                    child: AnimatedContainer(
+                      duration: UniBiteTokens.fast,
+                      curve: UniBiteTokens.easeOut,
+                      constraints: const BoxConstraints(minHeight: 48),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? UniBiteColors.primary100
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(
+                          UniBiteTokens.rPill,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Badge(
+                            isLabelVisible: item.badgeCount > 0,
+                            backgroundColor: UniBiteColors.secondary,
+                            label: Text('${item.badgeCount}'),
+                            child: Icon(
+                              item.icon,
+                              size: 20,
+                              color: selected
+                                  ? UniBiteColors.primary700
+                                  : UniBiteColors.inkMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            item.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: selected
+                                  ? UniBiteColors.primary700
+                                  : UniBiteColors.inkMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Animated live order status stepper with pulsing active stage and Ready confetti.
+class UbOrderStatusStepper extends StatelessWidget {
+  /// Creates a [UbOrderStatusStepper] for [status].
+  const UbOrderStatusStepper({super.key, required this.status});
+
+  /// Current [OrderStatus] of the tracked order.
+  final OrderStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final reduceMotion = UniBiteTokens.reduceMotion(context);
+    final steps = [
+      (OrderStatus.pending, l10n.statusPending, LucideIcons.clock),
+      (OrderStatus.accepted, l10n.statusAccepted, LucideIcons.check),
+      (OrderStatus.preparing, l10n.statusPreparing, LucideIcons.flame),
+      (OrderStatus.ready, l10n.statusReady, LucideIcons.packageCheck),
+    ];
+
+    final activeIdx = switch (status) {
+      OrderStatus.pending => 0,
+      OrderStatus.accepted => 1,
+      OrderStatus.preparing => 2,
+      OrderStatus.ready || OrderStatus.completed => 3,
+      OrderStatus.rejected || OrderStatus.cancelled => -1,
+    };
+
+    if (activeIdx < 0) return const SizedBox.shrink();
+
+    final isReady = status == OrderStatus.ready;
+    final activeColor = switch (status) {
+      OrderStatus.pending => UniBiteColors.accent,
+      OrderStatus.accepted || OrderStatus.preparing => UniBiteColors.secondary,
+      OrderStatus.ready => UniBiteColors.primary500,
+      OrderStatus.completed => UniBiteColors.completedMuted,
+      OrderStatus.rejected || OrderStatus.cancelled => UniBiteColors.danger,
+    };
+
+    return Stack(
+      children: [
+        if (isReady)
+          const Positioned.fill(
+            child: IgnorePointer(child: YellowConfettiOverlay()),
+          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: List.generate(steps.length, (i) {
+                final reached = i <= activeIdx;
+                final isCurrent = i == activeIdx;
+                final nodeColor = reached ? activeColor : UniBiteColors.border;
+
+                Widget node = Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: reached ? nodeColor : UniBiteColors.surface,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: nodeColor, width: 2),
+                  ),
+                  child: Icon(
+                    steps[i].$3,
+                    size: 14,
+                    color: reached
+                        ? (status == OrderStatus.pending && isCurrent
+                              ? UniBiteColors.onAccent
+                              : UniBiteColors.surface)
+                        : UniBiteColors.inkMuted,
+                  ),
+                );
+
+                if (isCurrent &&
+                    !reduceMotion &&
+                    !UniBiteTokens.isTestEnvironment &&
+                    status != OrderStatus.completed) {
+                  node = node
+                      .animate(onPlay: (c) => c.repeat(reverse: true))
+                      .scaleXY(
+                        begin: 1.0,
+                        end: 1.12,
+                        duration: const Duration(milliseconds: 700),
+                      );
+                }
+
+                return Expanded(
+                  child: Row(
+                    children: [
+                      node,
+                      if (i < steps.length - 1)
+                        Expanded(
+                          child: AnimatedContainer(
+                            duration: UniBiteTokens.normal,
+                            height: 4,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              color: i < activeIdx
+                                  ? activeColor
+                                  : UniBiteColors.border,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: steps
+                  .map(
+                    (s) => Expanded(
+                      child: Text(
+                        s.$2,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: s.$1 == status
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: s.$1 == status
+                              ? UniBiteColors.ink
+                              : UniBiteColors.inkMuted,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Green-tinted skeleton shimmer loader replacing blank loading states.
+class UbSkeletonShimmer extends StatelessWidget {
+  /// Creates a [UbSkeletonShimmer] list placeholder.
+  const UbSkeletonShimmer({super.key, this.itemCount = 3});
+
+  /// Number of skeleton rows to display.
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduceMotion = UniBiteTokens.reduceMotion(context);
+    return ListView.separated(
+      padding: const EdgeInsets.all(UniBiteTokens.screenPadding),
+      itemCount: itemCount,
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      itemBuilder: (context, _) {
+        final box = Container(
+          height: 92,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: UniBiteColors.surface,
+            borderRadius: BorderRadius.circular(UniBiteTokens.r20),
+            border: Border.all(color: UniBiteColors.border),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: UniBiteColors.primary100,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 14,
+                      width: 160,
+                      decoration: BoxDecoration(
+                        color: UniBiteColors.primary100,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 12,
+                      width: 110,
+                      decoration: BoxDecoration(
+                        color: UniBiteColors.primary50,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+        if (reduceMotion) return box;
+        return box
+            .animate(onPlay: (c) => c.repeat())
+            .shimmer(
+              duration: const Duration(milliseconds: 1100),
+              color: UniBiteColors.primary50,
+            );
+      },
+    );
+  }
+}
+
+/// Animated success check-draw emblem shown when an order is placed.
+class UbAnimatedCheck extends StatelessWidget {
+  /// Creates a [UbAnimatedCheck].
+  const UbAnimatedCheck({super.key, this.size = 64});
+
+  /// Diameter of the success check circle.
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduceMotion = UniBiteTokens.reduceMotion(context);
+    final circle = Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        color: UniBiteColors.primary500,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        LucideIcons.check,
+        color: UniBiteColors.surface,
+        size: size * 0.52,
+      ),
+    );
+    if (reduceMotion) return circle;
+    return circle
+        .animate()
+        .scale(begin: const Offset(0.4, 0.4), duration: UniBiteTokens.normal)
+        .fadeIn(duration: UniBiteTokens.fast);
+  }
+}
+
+/// Standardized elevated surface card with 20dp radius, 1px subtle outline, and soft shadow.
+class UbCard extends StatelessWidget {
+  const UbCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(AppSpacing.cardPadding),
+    this.padding = const EdgeInsets.all(AppSpacing.lg16),
     this.onTap,
     this.backgroundColor = AppColors.surface,
     this.borderColor = AppColors.outline,
@@ -201,7 +975,7 @@ class AppCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          HapticFeedback.lightImpact();
+          HapticFeedback.selectionClick();
           onTap!();
         },
         borderRadius: BorderRadius.circular(borderRadius),
@@ -211,351 +985,81 @@ class AppCard extends StatelessWidget {
   }
 }
 
-// =============================================================================
-// 4. AppButton (Primary, Secondary, Ghost, Danger)
-// =============================================================================
-
-enum AppButtonVariant { primary, secondary, ghost, danger }
-
-class AppButton extends StatefulWidget {
-  const AppButton({
+/// Standardized section header with H2 typography and optional trailing action.
+class UbSectionHeader extends StatelessWidget {
+  const UbSectionHeader({
     super.key,
-    required this.label,
-    required this.onPressed,
-    this.variant = AppButtonVariant.primary,
-    this.isLoading = false,
-    this.icon,
-    this.fullWidth = false,
-    this.height = 52,
+    required this.title,
+    this.badgeText,
+    this.actionText,
+    this.onActionTap,
+    this.padding = const EdgeInsets.only(bottom: AppSpacing.md12),
   });
 
-  const AppButton.primary({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.fullWidth = false,
-    this.height = 52,
-  }) : variant = AppButtonVariant.primary;
-
-  const AppButton.secondary({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.fullWidth = false,
-    this.height = 48,
-  }) : variant = AppButtonVariant.secondary;
-
-  const AppButton.ghost({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.fullWidth = false,
-    this.height = 48,
-  }) : variant = AppButtonVariant.ghost;
-
-  const AppButton.danger({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.fullWidth = false,
-    this.height = 48,
-  }) : variant = AppButtonVariant.danger;
-
-  final String label;
-  final VoidCallback? onPressed;
-  final AppButtonVariant variant;
-  final bool isLoading;
-  final IconData? icon;
-  final bool fullWidth;
-  final double height;
-
-  @override
-  State<AppButton> createState() => _AppButtonState();
-}
-
-class _AppButtonState extends State<AppButton> {
-  bool _pressed = false;
+  final String title;
+  final String? badgeText;
+  final String? actionText;
+  final VoidCallback? onActionTap;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
-    final enabled = widget.onPressed != null && !widget.isLoading;
-    final reduceMotion = AppMotion.reduceMotion(context);
-
-    // Styling properties based on variant
-    final isPrimary = widget.variant == AppButtonVariant.primary;
-    final isSecondary = widget.variant == AppButtonVariant.secondary;
-    final isGhost = widget.variant == AppButtonVariant.ghost;
-    final isDanger = widget.variant == AppButtonVariant.danger;
-
-    final radius = BorderRadius.circular(AppRadius.button);
-
-    Color textColor;
-    if (!enabled) {
-      textColor = AppColors.inkMuted;
-    } else if (isPrimary) {
-      textColor = AppColors.ink;
-    } else if (isSecondary) {
-      textColor = AppColors.green700;
-    } else if (isDanger) {
-      textColor = AppColors.danger;
-    } else {
-      textColor = AppColors.ink;
-    }
-
-    BoxDecoration decoration;
-    if (!enabled) {
-      decoration = BoxDecoration(
-        color: isGhost ? Colors.transparent : AppColors.green100,
-        borderRadius: radius,
-      );
-    } else if (isPrimary) {
-      decoration = BoxDecoration(
-        gradient: _pressed
-            ? const LinearGradient(colors: [AppColors.orangePressed, AppColors.orangePressed])
-            : AppColors.ctaGradient,
-        borderRadius: radius,
-        boxShadow: _pressed ? null : AppShadow.soft,
-      );
-    } else if (isSecondary) {
-      decoration = BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: radius,
-        border: Border.all(color: AppColors.green700),
-      );
-    } else if (isDanger) {
-      decoration = BoxDecoration(
-        color: AppColors.dangerSoft,
-        borderRadius: radius,
-        border: Border.all(color: AppColors.danger),
-      );
-    } else {
-      decoration = BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: radius,
-      );
-    }
-
-    Widget content = SizedBox(
-      height: widget.height,
-      width: widget.fullWidth ? double.infinity : null,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-          child: AnimatedSwitcher(
-            duration: AppMotion.fast,
-            child: widget.isLoading
-                ? SizedBox(
-                    key: const ValueKey('loader'),
-                    width: 22,
-                    height: 22,
-                    child: AppLoader.button(color: textColor),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (widget.icon != null) ...[
-                        Icon(widget.icon, size: 18, color: textColor),
-                        AppSpacing.h8,
-                      ],
-                      Flexible(
-                        child: Text(
-                          widget.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: isPrimary ? FontWeight.w800 : FontWeight.w700,
-                            color: textColor,
-                          ),
-                        ),
-                      ),
-                    ],
+    return Padding(
+      padding: padding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    title,
+                    style: AppText.h2(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-          ),
-        ),
-      ),
-    );
-
-    return GestureDetector(
-      onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
-      onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
-      onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
-      child: AnimatedScale(
-        scale: (_pressed && !reduceMotion) ? 0.97 : 1.0,
-        duration: AppMotion.fast,
-        curve: AppMotion.easeOut,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: enabled
-                ? () {
-                    HapticFeedback.lightImpact();
-                    widget.onPressed?.call();
-                  }
-                : null,
-            borderRadius: radius,
-            child: Ink(
-              decoration: decoration,
-              child: content,
+                ),
+                if (badgeText != null) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.orangeSoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      badgeText!,
+                      style: const TextStyle(
+                        color: AppColors.orangeText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
-        ),
+          if (actionText != null && onActionTap != null)
+            GestureDetector(
+              onTap: onActionTap,
+              child: Text(
+                actionText!,
+                style: AppText.bodyM(context, color: AppColors.orangeText)
+                    .copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+        ],
       ),
     );
   }
 }
 
-// =============================================================================
-// 5. AppIconButton
-// =============================================================================
-
-class AppIconButton extends StatelessWidget {
-  const AppIconButton({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-    this.tooltip,
-    this.size = 48,
-    this.iconSize = 20,
-    this.color = AppColors.green700,
-    this.backgroundColor,
-  });
-
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final String? tooltip;
-  final double size;
-  final double iconSize;
-  final Color color;
-  final Color? backgroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget button = Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.transparent,
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        iconSize: iconSize,
-        icon: Icon(icon, color: color),
-        onPressed: onPressed != null
-            ? () {
-                HapticFeedback.lightImpact();
-                onPressed!();
-              }
-            : null,
-      ),
-    );
-
-    if (tooltip != null) {
-      return Tooltip(message: tooltip!, child: button);
-    }
-    return button;
-  }
-}
-
-// =============================================================================
-// 6. AppTextField & SearchField
-// =============================================================================
-
-class AppTextField extends StatelessWidget {
-  const AppTextField({
-    super.key,
-    required this.label,
-    this.hintText,
-    this.controller,
-    this.obscureText = false,
-    this.keyboardType,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.validator,
-    this.onChanged,
-    this.onSubmitted,
-    this.enabled = true,
-  });
-
-  final String label;
-  final String? hintText;
-  final TextEditingController? controller;
-  final bool obscureText;
-  final TextInputType? keyboardType;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-  final FormFieldValidator<String>? validator;
-  final ValueChanged<String>? onChanged;
-  final ValueChanged<String>? onSubmitted;
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: AppText.caption(context, color: AppColors.inkSoft).copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        AppSpacing.v8,
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          enabled: enabled,
-          onChanged: onChanged,
-          onFieldSubmitted: onSubmitted,
-          validator: validator,
-          style: AppText.bodyL(context),
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: AppText.bodyM(context, color: AppColors.inkMuted),
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
-            filled: true,
-            fillColor: AppColors.surface,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.s16,
-              vertical: 14,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              borderSide: const BorderSide(color: AppColors.outline),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              borderSide: const BorderSide(color: AppColors.outline),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              borderSide: const BorderSide(color: AppColors.green500, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              borderSide: const BorderSide(color: AppColors.danger),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class SearchField extends StatelessWidget {
-  const SearchField({
+/// Floating rounded search input field with instant search and clear actions.
+class UbSearchField extends StatelessWidget {
+  const UbSearchField({
     super.key,
     required this.controller,
     required this.hintText,
@@ -575,7 +1079,7 @@ class SearchField extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.input),
         border: Border.all(color: AppColors.outline),
-        boxShadow: AppShadow.raised,
+        boxShadow: AppShadow.soft,
       ),
       child: TextField(
         controller: controller,
@@ -591,10 +1095,14 @@ class SearchField extends StatelessWidget {
           ),
           suffixIcon: ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
-            builder: (context, val, _) {
-              if (val.text.isEmpty) return const SizedBox.shrink();
+            builder: (context, value, _) {
+              if (value.text.isEmpty) return const SizedBox.shrink();
               return IconButton(
-                icon: const Icon(LucideIcons.x, size: 18, color: AppColors.inkMuted),
+                icon: const Icon(
+                  LucideIcons.x,
+                  size: 18,
+                  color: AppColors.inkMuted,
+                ),
                 onPressed: () {
                   controller.clear();
                   onChanged?.call('');
@@ -607,7 +1115,7 @@ class SearchField extends StatelessWidget {
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.s16,
+            horizontal: AppSpacing.lg16,
             vertical: 14,
           ),
         ),
@@ -616,732 +1124,30 @@ class SearchField extends StatelessWidget {
   }
 }
 
-// =============================================================================
-// 7. CategoryChip & StatusPill
-// =============================================================================
-
-class CategoryChip extends StatelessWidget {
-  const CategoryChip({
+/// Standard empty state container with circular icon, friendly title, and optional CTA.
+class UbEmptyState extends StatelessWidget {
+  const UbEmptyState({
     super.key,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-    this.icon,
-  });
-
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onTap();
-        },
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        child: AnimatedContainer(
-          duration: AppMotion.fast,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.green700 : AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-            border: Border.all(color: isSelected ? AppColors.green700 : AppColors.outline),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: 16, color: isSelected ? AppColors.surface : AppColors.ink),
-                AppSpacing.h8,
-              ],
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? AppColors.surface : AppColors.ink,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class StatusPill extends StatelessWidget {
-  const StatusPill({
-    super.key,
-    required this.label,
-    this.status,
-    this.dotColor,
-    this.backgroundColor,
-    this.textColor,
-  });
-
-  final String label;
-  final OrderStatus? status;
-  final Color? dotColor;
-  final Color? backgroundColor;
-  final Color? textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    Color bg;
-    Color fg;
-    Color dot;
-
-    if (status != null) {
-      bg = switch (status!) {
-        OrderStatus.pending => AppColors.yellow.withValues(alpha: 0.16),
-        OrderStatus.accepted || OrderStatus.preparing => AppColors.orangeSoft,
-        OrderStatus.ready => AppColors.green100,
-        OrderStatus.completed => AppColors.green50,
-        OrderStatus.rejected || OrderStatus.cancelled => AppColors.dangerSoft,
-      };
-      fg = switch (status!) {
-        OrderStatus.pending => AppColors.onYellow,
-        OrderStatus.accepted || OrderStatus.preparing => AppColors.orangeText,
-        OrderStatus.ready => AppColors.green700,
-        OrderStatus.completed => AppColors.inkMuted,
-        OrderStatus.rejected || OrderStatus.cancelled => AppColors.dangerText,
-      };
-      dot = switch (status!) {
-        OrderStatus.pending => AppColors.yellow,
-        OrderStatus.accepted || OrderStatus.preparing => AppColors.orange,
-        OrderStatus.ready => AppColors.green500,
-        OrderStatus.completed => AppColors.inkMuted,
-        OrderStatus.rejected || OrderStatus.cancelled => AppColors.danger,
-      };
-    } else {
-      bg = backgroundColor ?? AppColors.green100;
-      fg = textColor ?? AppColors.green700;
-      dot = dotColor ?? AppColors.yellow;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: dot),
-          ),
-          AppSpacing.h8,
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: fg,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// =============================================================================
-// 8. PriceText & QuantityStepper
-// =============================================================================
-
-class PriceText extends StatelessWidget {
-  const PriceText({
-    super.key,
-    required this.amount,
-    this.currency = 'JOD',
-    this.color,
-  });
-
-  final double amount;
-  final String currency;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      '${amount.toStringAsFixed(2)} $currency',
-      style: AppText.price(context, color: color),
-    );
-  }
-}
-
-class QuantityStepper extends StatelessWidget {
-  const QuantityStepper({
-    super.key,
-    required this.quantity,
-    required this.onChanged,
-    this.minValue = 0,
-  });
-
-  final int quantity;
-  final ValueChanged<int> onChanged;
-  final int minValue;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.green50,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(color: AppColors.outline),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-            onPressed: quantity > minValue
-                ? () {
-                    HapticFeedback.selectionClick();
-                    onChanged(quantity - 1);
-                  }
-                : null,
-            icon: Icon(
-              LucideIcons.minus,
-              size: 16,
-              color: quantity > minValue ? AppColors.green700 : AppColors.inkMuted,
-            ),
-          ),
-          SizedBox(
-            width: 28,
-            child: Center(
-              child: Text(
-                '$quantity',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                  color: AppColors.ink,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-            onPressed: () {
-              HapticFeedback.selectionClick();
-              onChanged(quantity + 1);
-            },
-            icon: const Icon(LucideIcons.plus, size: 16, color: AppColors.orangeText),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// =============================================================================
-// 9. CafeteriaCard, MealCard, OrderCard
-// =============================================================================
-
-class CafeteriaCard extends StatelessWidget {
-  const CafeteriaCard({
-    super.key,
-    required this.cafeteria,
-    required this.onTap,
-  });
-
-  final Cafeteria cafeteria;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final isOpen = cafeteria.isOpenAt(DateTime.now());
-
-    return Opacity(
-      opacity: isOpen ? 1.0 : 0.6,
-      child: AppCard(
-        padding: EdgeInsets.zero,
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  const Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
-                      child: CustomPaint(painter: SwooshHeroPainter()),
-                    ),
-                  ),
-                  Positioned(
-                    top: AppSpacing.s12,
-                    right: AppSpacing.s12,
-                    child: StatusPill(
-                      label: isOpen ? l10n.open : l10n.closed,
-                      dotColor: isOpen ? AppColors.yellow : AppColors.danger,
-                      backgroundColor: isOpen ? AppColors.green100 : AppColors.dangerSoft,
-                      textColor: isOpen ? AppColors.green700 : AppColors.dangerText,
-                    ),
-                  ),
-                  Positioned(
-                    left: AppSpacing.s16,
-                    bottom: -20,
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: AppShadow.soft,
-                      ),
-                      child: MealImageWidget(
-                        imagePath: cafeteria.logo,
-                        width: 48,
-                        height: 48,
-                        borderRadius: 13,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 26, AppSpacing.s16, AppSpacing.s16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    cafeteria.name,
-                    style: AppText.h2(context),
-                  ),
-                  AppSpacing.v4,
-                  Row(
-                    children: [
-                      const Icon(LucideIcons.clock, size: 14, color: AppColors.inkSoft),
-                      AppSpacing.h8,
-                      Expanded(
-                        child: Text(
-                          '${l10n.workingHoursFormat(cafeteria.workingHours)} · ${l10n.prepTimeFormat(cafeteria.prepTimeMinutes)}',
-                          style: AppText.caption(context),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MealCard extends StatelessWidget {
-  const MealCard({
-    super.key,
-    required this.meal,
-    required this.onTap,
-    this.onAdd,
-  });
-
-  final Meal meal;
-  final VoidCallback onTap;
-  final VoidCallback? onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return AppCard(
-      onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  meal.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.bodyL(context, weight: FontWeight.w700),
-                ),
-                AppSpacing.v4,
-                Text(
-                  meal.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.bodyM(context, color: AppColors.inkSoft),
-                ),
-                AppSpacing.v8,
-                PriceText(amount: meal.price),
-              ],
-            ),
-          ),
-          AppSpacing.h12,
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Hero(
-                tag: 'meal_${meal.id}',
-                child: MealImageWidget(
-                  imagePath: meal.imagePath,
-                  width: 96,
-                  height: 96,
-                  borderRadius: 16,
-                ),
-              ),
-              if (!meal.isAvailable)
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.green900.withValues(alpha: 0.72),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(4),
-                    child: Text(
-                      l10n.unavailable,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: AppColors.surface,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                )
-              else if (onAdd != null)
-                Positioned(
-                  bottom: -6,
-                  right: -6,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.orange,
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        onAdd!();
-                      },
-                      icon: const Icon(LucideIcons.plus, size: 18, color: AppColors.ink),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OrderCard extends StatelessWidget {
-  const OrderCard({
-    super.key,
-    required this.order,
-    required this.cafeteriaName,
-    required this.onTap,
-  });
-
-  final Order order;
-  final String cafeteriaName;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return AppCard(
-      onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                cafeteriaName,
-                style: AppText.h2(context),
-              ),
-              StatusPill(
-                label: l10n.orderStatusLabel(order.status),
-                status: order.status,
-              ),
-            ],
-          ),
-          AppSpacing.v8,
-          Text(
-            order.items.map((i) => '${i.qty}× ${i.name}').join(', '),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppText.bodyM(context),
-          ),
-          AppSpacing.v12,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${order.createdAt.year}-${order.createdAt.month.toString().padLeft(2, '0')}-${order.createdAt.day.toString().padLeft(2, '0')}',
-                style: AppText.caption(context),
-              ),
-              PriceText(amount: order.total),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// =============================================================================
-// 10. FloatingNavBar & CartBar
-// =============================================================================
-
-class FloatingNavBarDestination {
-  const FloatingNavBarDestination({
     required this.icon,
-    required this.label,
-    this.badgeCount = 0,
-  });
-
-  final IconData icon;
-  final String label;
-  final int badgeCount;
-}
-
-class FloatingNavBar extends StatelessWidget {
-  const FloatingNavBar({
-    super.key,
-    required this.selectedIndex,
-    required this.destinations,
-    required this.onSelected,
-  });
-
-  final int selectedIndex;
-  final List<FloatingNavBarDestination> destinations;
-  final ValueChanged<int> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 4, AppSpacing.s16, 12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppColors.green900,
-            borderRadius: BorderRadius.circular(AppRadius.sheet),
-            boxShadow: AppShadow.raised,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(destinations.length, (i) {
-              final item = destinations[i];
-              final isSelected = i == selectedIndex;
-              final itemWidget = InkWell(
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  onSelected(i);
-                },
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-                child: AnimatedContainer(
-                  duration: AppMotion.fast,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isSelected ? 12 : 8,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.orange : Colors.transparent,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Badge(
-                        isLabelVisible: item.badgeCount > 0,
-                        backgroundColor: AppColors.yellow,
-                        textColor: AppColors.onYellow,
-                        label: Text('${item.badgeCount}'),
-                        child: Icon(
-                          item.icon,
-                          size: 20,
-                          color: isSelected ? AppColors.ink : AppColors.surface,
-                        ),
-                      ),
-                      if (isSelected) ...[
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            item.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              );
-
-              return isSelected ? Flexible(child: itemWidget) : itemWidget;
-            }),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CartBar extends StatelessWidget {
-  const CartBar({
-    super.key,
-    required this.itemCount,
-    required this.cafeteriaName,
-    required this.totalAmount,
-    required this.onTap,
-  });
-
-  final int itemCount;
-  final String cafeteriaName;
-  final double totalAmount;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (itemCount <= 0) return const SizedBox.shrink();
-    final l10n = context.l10n;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap();
-        },
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.green700,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-            boxShadow: AppShadow.raised,
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: const BoxDecoration(
-                  color: AppColors.yellow,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  '$itemCount',
-                  style: const TextStyle(
-                    color: AppColors.onYellow,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              AppSpacing.h12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.navCart,
-                      style: const TextStyle(
-                        color: AppColors.surface,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      cafeteriaName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.green100,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.orange,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Text(
-                  '${totalAmount.toStringAsFixed(2)} ${l10n.currencyJod}',
-                  style: const TextStyle(
-                    color: AppColors.ink,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// =============================================================================
-// 11. EmptyState & ErrorState
-// =============================================================================
-
-class EmptyState extends StatelessWidget {
-  const EmptyState({
-    super.key,
     required this.title,
     this.subtitle,
     this.actionLabel,
     this.onAction,
-    this.icon = LucideIcons.utensilsCrossed,
   });
 
+  final IconData icon;
   final String title;
   final String? subtitle;
   final String? actionLabel;
   final VoidCallback? onAction;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.s32),
+        padding: const EdgeInsets.all(AppSpacing.xxxl32),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
@@ -1351,25 +1157,29 @@ class EmptyState extends StatelessWidget {
                 color: AppColors.green100,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 38, color: AppColors.green700),
+              child: Icon(
+                icon,
+                size: 38,
+                color: AppColors.green700,
+              ),
             ),
-            AppSpacing.v16,
+            const SizedBox(height: AppSpacing.lg16),
             Text(
               title,
               style: AppText.h2(context),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              AppSpacing.v8,
+              const SizedBox(height: AppSpacing.sm8),
               Text(
                 subtitle!,
-                style: AppText.bodyM(context, color: AppColors.inkSoft),
+                style: AppText.bodyM(context, color: AppColors.inkMuted),
                 textAlign: TextAlign.center,
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
-              AppSpacing.v24,
-              AppButton.primary(
+              const SizedBox(height: AppSpacing.xxl24),
+              UbPrimaryButton(
                 label: actionLabel!,
                 onPressed: onAction,
               ),
@@ -1381,26 +1191,28 @@ class EmptyState extends StatelessWidget {
   }
 }
 
-class ErrorState extends StatelessWidget {
-  const ErrorState({
+/// Standard error state container with circular warning icon and retry CTA.
+class UbErrorState extends StatelessWidget {
+  const UbErrorState({
     super.key,
     required this.title,
     required this.message,
     this.onRetry,
-    this.retryLabel = 'Retry',
+    this.retryLabel,
   });
 
   final String title;
   final String message;
   final VoidCallback? onRetry;
-  final String retryLabel;
+  final String? retryLabel;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.s32),
+        padding: const EdgeInsets.all(AppSpacing.xxxl32),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
@@ -1410,26 +1222,30 @@ class ErrorState extends StatelessWidget {
                 color: AppColors.dangerSoft,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.alertCircle, size: 36, color: AppColors.danger),
+              child: const Icon(
+                LucideIcons.alertCircle,
+                size: 36,
+                color: AppColors.danger,
+              ),
             ),
-            AppSpacing.v16,
+            const SizedBox(height: AppSpacing.lg16),
             Text(
               title,
               style: AppText.h2(context, color: AppColors.dangerText),
               textAlign: TextAlign.center,
             ),
-            AppSpacing.v8,
+            const SizedBox(height: AppSpacing.sm8),
             Text(
               message,
               style: AppText.bodyM(context, color: AppColors.inkSoft),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              AppSpacing.v24,
-              AppButton.secondary(
-                label: retryLabel,
-                icon: LucideIcons.rotateCcw,
+              const SizedBox(height: AppSpacing.xxl24),
+              UbSecondaryButton(
+                label: retryLabel ?? 'Retry',
                 onPressed: onRetry,
+                icon: LucideIcons.rotateCcw,
               ),
             ],
           ],
@@ -1439,194 +1255,7 @@ class ErrorState extends StatelessWidget {
   }
 }
 
-class OfflineBanner extends StatelessWidget {
-  const OfflineBanner({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
-
-  final String message;
-  final VoidCallback? onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: const BoxDecoration(
-        color: AppColors.danger,
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          children: [
-            const Icon(LucideIcons.wifiOff, size: 18, color: AppColors.surface),
-            AppSpacing.h12,
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(
-                  color: AppColors.surface,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-            if (onRetry != null)
-              TextButton(
-                onPressed: onRetry,
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.surface,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                child: const Text('Retry', style: TextStyle(fontWeight: FontWeight.w700)),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// =============================================================================
-// 12. SkeletonBox & AppDialog
-// =============================================================================
-
-class SkeletonBox extends StatelessWidget {
-  const SkeletonBox({
-    super.key,
-    required this.width,
-    required this.height,
-    this.borderRadius = AppRadius.input,
-  });
-
-  final double width;
-  final double height;
-  final double borderRadius;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: AppColors.green100,
-        borderRadius: BorderRadius.circular(borderRadius),
-      ),
-    );
-  }
-}
-
-// =============================================================================
-// Backward-compatible widget aliases
-// =============================================================================
-
-typedef UbCard = AppCard;
-typedef UbSectionHeader = SectionHeader;
-typedef UbSearchField = SearchField;
-typedef UbEmptyState = EmptyState;
-typedef UbErrorState = ErrorState;
-class UbOpenClosedPill extends StatelessWidget {
-  const UbOpenClosedPill({super.key, required this.isOpen});
-
-  final bool isOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return StatusPill(
-      label: isOpen ? l10n.open : l10n.closed,
-      dotColor: isOpen ? AppColors.yellow : AppColors.danger,
-      backgroundColor: isOpen ? AppColors.green100 : AppColors.dangerSoft,
-      textColor: isOpen ? AppColors.green700 : AppColors.dangerText,
-    );
-  }
-}
-typedef UbQuantityStepper = QuantityStepper;
-typedef UbStickyCartBar = CartBar;
-typedef UbNavDestination = FloatingNavBarDestination;
-typedef UbFloatingPillNav = FloatingNavBar;
-
-class UbPrimaryButton extends StatelessWidget {
-  const UbPrimaryButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.backgroundColor = AppColors.orange,
-  });
-
-  final String label;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final IconData? icon;
-  final Color backgroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppButton.primary(
-      label: label,
-      onPressed: onPressed,
-      isLoading: isLoading,
-      icon: icon,
-    );
-  }
-}
-
-class UbSecondaryButton extends StatelessWidget {
-  const UbSecondaryButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.icon,
-    this.isDanger = false,
-  });
-
-  final String label;
-  final VoidCallback? onPressed;
-  final IconData? icon;
-  final bool isDanger;
-
-  @override
-  Widget build(BuildContext context) {
-    if (isDanger) {
-      return AppButton.danger(
-        label: label,
-        onPressed: onPressed,
-        icon: icon,
-      );
-    }
-    return AppButton.secondary(
-      label: label,
-      onPressed: onPressed,
-      icon: icon,
-    );
-  }
-}
-
-class UbGhostButton extends StatelessWidget {
-  const UbGhostButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.underlinedOrange = false,
-  });
-
-  final String label;
-  final VoidCallback? onPressed;
-  final bool underlinedOrange;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppButton.ghost(
-      label: label,
-      onPressed: onPressed,
-    );
-  }
-}
-
+/// Segmented tab pill controller for Cart Pickup vs. Pre-order.
 class UbSegmentedControl<T> extends StatelessWidget {
   const UbSegmentedControl({
     super.key,
@@ -1673,20 +1302,21 @@ class UbSegmentedControl<T> extends StatelessWidget {
                       Icon(
                         opt.$3,
                         size: 16,
-                        color: isSelected ? AppColors.green700 : AppColors.inkMuted,
+                        color: isSelected
+                            ? AppColors.green700
+                            : AppColors.inkMuted,
                       ),
-                      AppSpacing.h8,
+                      const SizedBox(width: 6),
                     ],
-                    Flexible(
-                      child: Text(
-                        opt.$2,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                          color: isSelected ? AppColors.green700 : AppColors.inkMuted,
-                        ),
+                    Text(
+                      opt.$2,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight:
+                            isSelected ? FontWeight.w800 : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.green700
+                            : AppColors.inkMuted,
                       ),
                     ),
                   ],
@@ -1700,146 +1330,98 @@ class UbSegmentedControl<T> extends StatelessWidget {
   }
 }
 
-class UbOrderStatusStepper extends StatelessWidget {
-  const UbOrderStatusStepper({super.key, required this.status});
+/// Modern enterprise statistic & metric card for dashboard analytics.
+class UbStatCard extends StatelessWidget {
+  const UbStatCard({
+    super.key,
+    required this.title,
+    required this.value,
+    this.subtitle,
+    required this.icon,
+    this.iconColor = AppColors.green700,
+    this.iconBackground = AppColors.green100,
+    this.badgeText,
+    this.badgeColor,
+    this.badgeTextColor,
+    this.onTap,
+  });
 
-  final OrderStatus status;
+  final String title;
+  final String value;
+  final String? subtitle;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBackground;
+  final String? badgeText;
+  final Color? badgeColor;
+  final Color? badgeTextColor;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final reduceMotion = AppMotion.reduceMotion(context);
-    final steps = [
-      (OrderStatus.pending, l10n.statusPending, LucideIcons.clock),
-      (OrderStatus.accepted, l10n.statusAccepted, LucideIcons.check),
-      (OrderStatus.preparing, l10n.statusPreparing, LucideIcons.flame),
-      (OrderStatus.ready, l10n.statusReady, LucideIcons.packageCheck),
-    ];
-
-    final activeIdx = switch (status) {
-      OrderStatus.pending => 0,
-      OrderStatus.accepted => 1,
-      OrderStatus.preparing => 2,
-      OrderStatus.ready || OrderStatus.completed => 3,
-      OrderStatus.rejected || OrderStatus.cancelled => -1,
-    };
-
-    if (activeIdx < 0) return const SizedBox.shrink();
-
-    final activeColor = switch (status) {
-      OrderStatus.pending => AppColors.yellow,
-      OrderStatus.accepted || OrderStatus.preparing => AppColors.orange,
-      OrderStatus.ready => AppColors.green500,
-      OrderStatus.completed => AppColors.inkMuted,
-      OrderStatus.rejected || OrderStatus.cancelled => AppColors.danger,
-    };
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: List.generate(steps.length, (i) {
-            final reached = i <= activeIdx;
-            final isCurrent = i == activeIdx;
-            final nodeColor = reached ? activeColor : AppColors.outline;
-
-            Widget node = Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: reached ? nodeColor : AppColors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(color: nodeColor, width: 2),
+    return UbCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(AppSpacing.lg16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: iconBackground,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 20, color: iconColor),
               ),
-              child: Icon(
-                steps[i].$3,
-                size: 14,
-                color: reached
-                    ? (status == OrderStatus.pending && isCurrent
-                          ? AppColors.onYellow
-                          : AppColors.surface)
-                    : AppColors.inkMuted,
-              ),
-            );
-
-            if (isCurrent &&
-                !reduceMotion &&
-                !AppMotion.isTestEnvironment &&
-                status != OrderStatus.completed) {
-              node = node
-                  .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .scaleXY(
-                    begin: 1.0,
-                    end: 1.12,
-                    duration: const Duration(milliseconds: 700),
-                  );
-            }
-
-            return Expanded(
-              child: Row(
-                children: [
-                  node,
-                  if (i < steps.length - 1)
-                    Expanded(
-                      child: AnimatedContainer(
-                        duration: AppMotion.normal,
-                        height: 4,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          color: i < activeIdx ? activeColor : AppColors.outline,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            );
-          }),
-        ),
-        AppSpacing.v8,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: steps
-              .map(
-                (s) => Expanded(
+              if (badgeText != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: badgeColor ?? AppColors.green100,
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
                   child: Text(
-                    s.$2,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    badgeText!,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: s.$1 == status ? FontWeight.w700 : FontWeight.w500,
-                      color: s.$1 == status ? AppColors.ink : AppColors.inkMuted,
+                      fontWeight: FontWeight.w700,
+                      color: badgeTextColor ?? AppColors.green700,
                     ),
                   ),
                 ),
-              )
-              .toList(),
-        ),
-      ],
-    );
-  }
-}
-
-class UbAnimatedCheck extends StatelessWidget {
-  const UbAnimatedCheck({super.key, this.size = 64});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        color: AppColors.green500,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        LucideIcons.check,
-        color: AppColors.surface,
-        size: size * 0.52,
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md12),
+          Text(
+            value,
+            style: AppText.display(context).copyWith(
+              fontSize: 26,
+              height: 1.2,
+              fontWeight: FontWeight.w800,
+              color: AppColors.ink,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: AppText.bodyM(context, color: AppColors.inkMuted).copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle!,
+              style: AppText.caption(context, color: AppColors.inkSoft),
+            ),
+          ],
+        ],
       ),
     );
   }

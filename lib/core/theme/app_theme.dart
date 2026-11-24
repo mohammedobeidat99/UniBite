@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unibite/core/design_system/app_colors.dart';
 import 'package:unibite/core/design_system/app_spacing.dart';
-import 'package:unibite/core/design_system/colors.dart';
-import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/design_system/typography.dart';
 
 /// Material 3 theme builder strictly configured with UniBite design system tokens.
@@ -68,7 +66,7 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surface,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.s16,
+          horizontal: AppSpacing.lg16,
           vertical: 14,
         ),
         labelStyle: textTheme.bodyMedium?.copyWith(

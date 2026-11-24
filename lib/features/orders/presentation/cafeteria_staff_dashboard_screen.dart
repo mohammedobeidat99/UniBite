@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:unibite/core/design_system/colors.dart';
+import 'package:unibite/core/design_system/components.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
-import 'package:unibite/core/widgets/state_views.dart';
 import 'package:unibite/core/widgets/unibite_logo.dart';
 import 'package:unibite/features/orders/presentation/live_order_board_widget.dart';
 import 'package:unibite/features/orders/presentation/qr_lookup_view.dart';
@@ -30,10 +29,7 @@ class _CafeteriaStaffDashboardScreenState
     final l10n = context.l10n;
     final actor = ref.watch(currentUserProvider);
     if (actor == null || actor.cafeteriaId == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.green50,
-        body: SizedBox.shrink(),
-      );
+      return const Scaffold(body: SizedBox.shrink());
     }
 
     final cafeteriaId = actor.cafeteriaId!;
@@ -71,16 +67,16 @@ class _CafeteriaStaffDashboardScreenState
         ),
         actions: [
           if (isWide) ...[
-            StatusBadge(
+            UbStatusBadge(
               label: l10n.liveConnectedBadge,
-              backgroundColor: UniBiteColors.primary100,
-              textColor: UniBiteColors.primary700,
+              backgroundColor: AppColors.green100,
+              textColor: AppColors.green700,
             ),
             const SizedBox(width: 8),
-            StatusBadge(
+            UbStatusBadge(
               label: l10n.screenAwakeBadge,
-              backgroundColor: UniBiteColors.primary50,
-              textColor: UniBiteColors.inkMuted,
+              backgroundColor: AppColors.green50,
+              textColor: AppColors.inkMuted,
             ),
             const SizedBox(width: 6),
           ],
@@ -105,20 +101,20 @@ class _CafeteriaStaffDashboardScreenState
                 NavigationRail(
                   selectedIndex: _selectedTab,
                   extended: MediaQuery.sizeOf(context).width >= 1120,
-                  backgroundColor: UniBiteColors.primary900,
-                  indicatorColor: UniBiteColors.secondary,
+                  backgroundColor: AppColors.green900,
+                  indicatorColor: AppColors.orange,
                   selectedIconTheme: const IconThemeData(
-                    color: UniBiteColors.surface,
+                    color: AppColors.ink,
                   ),
                   unselectedIconTheme: const IconThemeData(
-                    color: UniBiteColors.primary100,
+                    color: AppColors.green100,
                   ),
                   selectedLabelTextStyle: const TextStyle(
-                    color: UniBiteColors.surface,
+                    color: AppColors.ink,
                     fontWeight: FontWeight.w700,
                   ),
                   unselectedLabelTextStyle: const TextStyle(
-                    color: UniBiteColors.primary100,
+                    color: AppColors.green100,
                     fontWeight: FontWeight.w500,
                   ),
                   onDestinationSelected: (idx) =>

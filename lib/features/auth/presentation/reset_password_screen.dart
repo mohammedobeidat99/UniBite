@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:unibite/core/database/seed_data.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
 import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
@@ -87,15 +86,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: UniBiteColors.secondarySoft,
-                          borderRadius: BorderRadius.circular(
-                            UniBiteTokens.r12,
+                          color: AppColors.orangeSoft,
+                          borderRadius: BorderRadius.circular(AppRadius.input),
+                          border: Border.all(
+                            color: AppColors.orangeText.withValues(alpha: 0.2),
                           ),
                         ),
                         child: Text(
                           l10n.resetPasswordSubtitle,
                           style: const TextStyle(
-                            color: UniBiteColors.secondaryText,
+                            color: AppColors.orangeText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -105,15 +105,19 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: UniBiteColors.dangerSoft,
-                            borderRadius: BorderRadius.circular(
-                              UniBiteTokens.r12,
+                            color: AppColors.dangerSoft,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.input),
+                            border: Border.all(
+                              color: AppColors.dangerText.withValues(
+                                alpha: 0.22,
+                              ),
                             ),
                           ),
                           child: Text(
                             _errorMessage!,
                             style: const TextStyle(
-                              color: UniBiteColors.dangerText,
+                              color: AppColors.dangerText,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

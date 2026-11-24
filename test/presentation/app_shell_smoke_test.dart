@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:unibite/core/database/local_storage_service.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
 import 'package:unibite/main.dart';
@@ -76,7 +75,7 @@ void main() {
       expect(find.text('Green Olive Grill'), findsWidgets);
 
       // Navigate to Settings and tap Sign Out; must return cleanly to Login without skeleton hang.
-      await tester.tap(find.byIcon(LucideIcons.user));
+      await tester.tap(find.text('Settings'));
       await tester.pumpAndSettle();
 
       final signOutBtn = find.text('Sign Out');

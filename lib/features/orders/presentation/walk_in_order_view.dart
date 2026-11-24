@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
-import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
@@ -88,13 +86,17 @@ class _WalkInOrderViewState extends ConsumerState<WalkInOrderView> {
                 children: [
                   const UbAnimatedCheck(size: 52),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    width: 160,
-                    height: 160,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.input),
+                      border: Border.all(color: AppColors.outline),
+                    ),
                     child: QrImageView(
                       data: created.qrCode,
-                      size: 160,
-                      backgroundColor: UniBiteColors.surface,
+                      size: 150,
+                      backgroundColor: AppColors.surface,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -212,10 +214,11 @@ class _WalkInOrderViewState extends ConsumerState<WalkInOrderView> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(UniBiteTokens.s16),
-              decoration: const BoxDecoration(
-                color: UniBiteColors.surface,
-                border: Border(top: BorderSide(color: UniBiteColors.border)),
+              padding: const EdgeInsets.all(AppSpacing.lg16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                border: const Border(top: BorderSide(color: AppColors.outline)),
+                boxShadow: AppShadow.soft,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -233,8 +236,11 @@ class _WalkInOrderViewState extends ConsumerState<WalkInOrderView> {
                       Expanded(
                         child: Text(
                           '${l10n.totalLabel}: ${total.toStringAsFixed(2)} ${l10n.currencyJod}',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(color: UniBiteColors.secondaryText),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            color: AppColors.orangeText,
+                          ),
                         ),
                       ),
                       UbPrimaryButton(

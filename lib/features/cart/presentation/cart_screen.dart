@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
-import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
 import 'package:unibite/core/providers/repository_providers.dart';
@@ -75,38 +73,54 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         await showDialog<void>(
           context: context,
           builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.sheet),
+            ),
+            backgroundColor: AppColors.surface,
+            contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
             content: SizedBox(
-              width: 280,
+              width: 300,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const UbAnimatedCheck(size: 64),
-                  const SizedBox(height: 14),
+                  const UbAnimatedCheck(size: 68),
+                  const SizedBox(height: 16),
                   Text(
                     l10n.orderNumberLabel(order.orderNumber),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: UniBiteColors.primary700,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                      color: AppColors.green900,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     l10n.orderPlacedSuccess(order.orderNumber),
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: const TextStyle(
+                      color: AppColors.inkSoft,
+                      fontSize: 14,
+                    ),
                   ),
-                  const SizedBox(height: 14),
-                  SizedBox(
-                    width: 140,
-                    height: 140,
+                  const SizedBox(height: 18),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      border: Border.all(color: AppColors.outline),
+                      boxShadow: AppShadow.soft,
+                    ),
                     child: QrImageView(
                       data: order.qrCode,
-                      size: 140,
-                      backgroundColor: UniBiteColors.surface,
+                      size: 150,
+                      backgroundColor: AppColors.surface,
                     ),
                   ),
                 ],
               ),
             ),
+            actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
             actions: [
               UbPrimaryButton(
                 label: l10n.close,
@@ -147,34 +161,44 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(UniBiteTokens.screenPadding),
+            padding: const EdgeInsets.all(AppSpacing.lg16),
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        LucideIcons.store,
-                        color: UniBiteColors.primary700,
+              UbCard(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.green100,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          cart.cafeteriaName ?? '',
-                          style: Theme.of(context).textTheme.titleSmall,
+                      child: const Icon(
+                        LucideIcons.store,
+                        color: AppColors.green700,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        cart.cafeteriaName ?? '',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          color: AppColors.ink,
                         ),
                       ),
-                      UbGhostButton(
-                        onPressed: () =>
-                            ref.read(cartProvider.notifier).clear(),
-                        label: l10n.clearCartButton,
-                      ),
-                    ],
-                  ),
+                    ),
+                    UbGhostButton(
+                      onPressed: () =>
+                          ref.read(cartProvider.notifier).clear(),
+                      label: l10n.clearCartButton,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: UniBiteTokens.s12),
+              const SizedBox(height: AppSpacing.md12),
               ...List.generate(cart.items.length, (index) {
                 final item = cart.items[index];
                 return Padding(
@@ -186,12 +210,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       alignment: AlignmentDirectional.centerEnd,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
-                        color: UniBiteColors.dangerSoft,
-                        borderRadius: BorderRadius.circular(UniBiteTokens.r20),
+                        color: AppColors.dangerSoft,
+                        borderRadius: BorderRadius.circular(AppRadius.card),
                       ),
                       child: const Icon(
                         LucideIcons.trash2,
-                        color: UniBiteColors.dangerText,
+                        color: AppColors.dangerText,
                       ),
                     ),
                     onDismissed: (_) {
@@ -201,7 +225,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                           content: Text(l10n.removedItemUndo(item.meal.name)),
                           action: SnackBarAction(
                             label: l10n.undoAction,
-                            textColor: UniBiteColors.accent,
+                            textColor: AppColors.yellow,
                             onPressed: () {
                               ref
                                   .read(cartProvider.notifier)
@@ -216,63 +240,67 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         ),
                       );
                     },
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            MealImageWidget(
-                              imagePath: item.meal.imagePath,
-                              width: 56,
-                              height: 56,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                    child: UbCard(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          MealImageWidget(
+                            imagePath: item.meal.imagePath,
+                            width: 60,
+                            height: 60,
+                            borderRadius: 14,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.meal.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 15,
+                                    color: AppColors.ink,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${item.meal.price.toStringAsFixed(2)} ${l10n.currencyJod}',
+                                  style: const TextStyle(
+                                    color: AppColors.orangeText,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                if (item.note != null &&
+                                    item.note!.isNotEmpty) ...[
+                                  const SizedBox(height: 3),
                                   Text(
-                                    item.meal.name,
+                                    item.note!,
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.inkMuted,
+                                      fontSize: 12,
                                     ),
                                   ),
-                                  Text(
-                                    '${item.meal.price.toStringAsFixed(2)} ${l10n.currencyJod}',
-                                    style: const TextStyle(
-                                      color: UniBiteColors.secondaryText,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  if (item.note != null &&
-                                      item.note!.isNotEmpty)
-                                    Text(
-                                      item.note!,
-                                      style: const TextStyle(
-                                        color: UniBiteColors.inkMuted,
-                                        fontSize: 12,
-                                      ),
-                                    ),
                                 ],
-                              ),
+                              ],
                             ),
-                            UbQuantityStepper(
-                              quantity: item.quantity,
-                              onChanged: (q) => ref
-                                  .read(cartProvider.notifier)
-                                  .updateQuantity(index, q),
-                            ),
-                          ],
-                        ),
+                          ),
+                          UbQuantityStepper(
+                            quantity: item.quantity,
+                            onChanged: (q) => ref
+                                .read(cartProvider.notifier)
+                                .updateQuantity(index, q),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 );
               }),
               const SizedBox(height: 6),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(UniBiteTokens.cardPadding),
+              UbCard(
+                padding: const EdgeInsets.all(AppSpacing.lg16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -347,23 +375,28 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         children: [
                           Text(
                             l10n.totalLabel,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: AppColors.ink,
+                            ),
                           ),
                           Text(
                             '${cart.totalAmount.toStringAsFixed(2)} ${l10n.currencyJod}',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(color: UniBiteColors.secondaryText),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18,
+                              color: AppColors.orangeText,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: UniBiteColors.primary100,
-                          borderRadius: BorderRadius.circular(
-                            UniBiteTokens.r12,
-                          ),
+                          color: AppColors.green100,
+                          borderRadius: BorderRadius.circular(AppRadius.input),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,16 +404,16 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                             Text(
                               l10n.paymentMethodCashOnly,
                               style: const TextStyle(
-                                color: UniBiteColors.primary700,
+                                color: AppColors.green900,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 12.5,
+                                fontSize: 13,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               l10n.fulfillmentSelfPickupOnly,
                               style: const TextStyle(
-                                color: UniBiteColors.primary700,
+                                color: AppColors.green700,
                                 fontSize: 12.5,
                               ),
                             ),
@@ -392,7 +425,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         Text(
                           l10n.cafeteriaClosedOrderBlocked,
                           style: const TextStyle(
-                            color: UniBiteColors.dangerText,
+                            color: AppColors.dangerText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -402,7 +435,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         Text(
                           _checkoutError!,
                           style: const TextStyle(
-                            color: UniBiteColors.dangerText,
+                            color: AppColors.dangerText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -410,15 +443,15 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         Container(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-          decoration: const BoxDecoration(
-            color: UniBiteColors.surface,
-            border: Border(top: BorderSide(color: UniBiteColors.border)),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            border: const Border(top: BorderSide(color: AppColors.outline)),
+            boxShadow: AppShadow.soft,
           ),
           child: UbPrimaryButton(
             onPressed: (!_isPreOrder && !isOpenNow) ? null : _placeOrder,

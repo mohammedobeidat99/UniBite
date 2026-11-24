@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
 import 'package:unibite/core/design_system/tokens.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
@@ -234,7 +233,7 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: UniBiteColors.danger,
+              backgroundColor: AppColors.danger,
             ),
             onPressed: () {
               if (formKey.currentState!.validate()) {
@@ -334,8 +333,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                 animation: _pulseController,
                 builder: (context, _) {
                   final color = Color.lerp(
-                    UniBiteColors.secondary,
-                    UniBiteColors.danger,
+                    AppColors.orange,
+                    AppColors.danger,
                     _pulseController.value,
                   )!;
                   return Container(
@@ -347,21 +346,21 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                     ),
                     decoration: BoxDecoration(
                       color: color,
-                      borderRadius: BorderRadius.circular(UniBiteTokens.r12),
+                      borderRadius: BorderRadius.circular(AppRadius.input),
                     ),
                     child: Row(
                       children: [
                         const Icon(
                           LucideIcons.bellRing,
-                          color: UniBiteColors.surface,
+                          color: AppColors.ink,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             l10n.pendingAlertBanner(pendingOrders.length),
                             style: const TextStyle(
-                              color: UniBiteColors.surface,
-                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink,
+                              fontWeight: FontWeight.w800,
                               fontSize: 15,
                             ),
                           ),
@@ -382,8 +381,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                             child: _BoardColumn(
                               title: l10n.columnNew,
                               count: pendingOrders.length,
-                              accentColor: UniBiteColors.accent,
-                              headerTextColor: UniBiteColors.onAccent,
+                              accentColor: AppColors.orange,
+                              headerTextColor: AppColors.ink,
                               orders: pendingOrders,
                               timeoutSeconds: timeoutSeconds,
                               now: _now,
@@ -404,8 +403,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                             child: _BoardColumn(
                               title: l10n.columnPreparing,
                               count: preparingOrders.length,
-                              accentColor: UniBiteColors.secondary,
-                              headerTextColor: UniBiteColors.surface,
+                              accentColor: AppColors.yellow,
+                              headerTextColor: AppColors.onYellow,
                               orders: preparingOrders,
                               timeoutSeconds: timeoutSeconds,
                               now: _now,
@@ -426,8 +425,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                             child: _BoardColumn(
                               title: l10n.columnReady,
                               count: readyOrders.length,
-                              accentColor: UniBiteColors.primary500,
-                              headerTextColor: UniBiteColors.surface,
+                              accentColor: AppColors.green500,
+                              headerTextColor: AppColors.surface,
                               orders: readyOrders,
                               timeoutSeconds: timeoutSeconds,
                               now: _now,
@@ -451,8 +450,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                       child: Column(
                         children: [
                           TabBar(
-                            labelColor: UniBiteColors.primary700,
-                            indicatorColor: UniBiteColors.secondary,
+                            labelColor: AppColors.green700,
+                            indicatorColor: AppColors.orange,
                             tabs: [
                               Tab(
                                 text:
@@ -474,8 +473,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                                 _BoardColumn(
                                   title: l10n.columnNew,
                                   count: pendingOrders.length,
-                                  accentColor: UniBiteColors.accent,
-                                  headerTextColor: UniBiteColors.onAccent,
+                                  accentColor: AppColors.orange,
+                                  headerTextColor: AppColors.ink,
                                   orders: pendingOrders,
                                   timeoutSeconds: timeoutSeconds,
                                   now: _now,
@@ -493,8 +492,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                                 _BoardColumn(
                                   title: l10n.columnPreparing,
                                   count: preparingOrders.length,
-                                  accentColor: UniBiteColors.secondary,
-                                  headerTextColor: UniBiteColors.surface,
+                                  accentColor: AppColors.yellow,
+                                  headerTextColor: AppColors.onYellow,
                                   orders: preparingOrders,
                                   timeoutSeconds: timeoutSeconds,
                                   now: _now,
@@ -512,8 +511,8 @@ class _LiveOrderBoardWidgetState extends ConsumerState<LiveOrderBoardWidget>
                                 _BoardColumn(
                                   title: l10n.columnReady,
                                   count: readyOrders.length,
-                                  accentColor: UniBiteColors.primary500,
-                                  headerTextColor: UniBiteColors.surface,
+                                  accentColor: AppColors.green500,
+                                  headerTextColor: AppColors.surface,
                                   orders: readyOrders,
                                   timeoutSeconds: timeoutSeconds,
                                   now: _now,
@@ -578,18 +577,18 @@ class _BoardColumn extends StatelessWidget {
     final reduceMotion = UniBiteTokens.reduceMotion(context);
     return Container(
       decoration: BoxDecoration(
-        color: UniBiteColors.surface,
-        borderRadius: BorderRadius.circular(UniBiteTokens.r20),
-        border: Border.all(color: UniBiteColors.border),
-        boxShadow: UniBiteTokens.shadow1,
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(color: AppColors.outline),
+        boxShadow: AppShadow.soft,
       ),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: UniBiteColors.primary50,
-              borderRadius: const BorderRadius.vertical(
+            decoration: const BoxDecoration(
+              color: AppColors.green50,
+              borderRadius: BorderRadius.vertical(
                 top: Radius.circular(19),
               ),
             ),
@@ -597,7 +596,14 @@ class _BoardColumn extends StatelessWidget {
               children: [
                 CircleAvatar(radius: 6, backgroundColor: accentColor),
                 const SizedBox(width: 8),
-                Text(title, style: Theme.of(context).textTheme.titleSmall),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    color: AppColors.green900,
+                  ),
+                ),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -606,14 +612,14 @@ class _BoardColumn extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: accentColor,
-                    borderRadius: BorderRadius.circular(UniBiteTokens.rPill),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Text(
                     '$count',
                     style: TextStyle(
                       color: headerTextColor,
                       fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -626,7 +632,7 @@ class _BoardColumn extends StatelessWidget {
                     child: Text(
                       '—',
                       style: TextStyle(
-                        color: UniBiteColors.completedMuted,
+                        color: AppColors.inkMuted,
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                       ),
@@ -701,8 +707,8 @@ class _OrderTicketCard extends StatelessWidget {
         );
     final isUrgent = order.status == OrderStatus.pending;
     final timerColor = remainingSeconds <= 30 || elapsedMinutes >= 10
-        ? UniBiteColors.dangerText
-        : UniBiteColors.secondaryText;
+        ? AppColors.dangerText
+        : AppColors.inkMuted;
 
     final statusAccentColor = switch (order.status) {
       OrderStatus.pending => AppColors.orange,
@@ -712,44 +718,49 @@ class _OrderTicketCard extends StatelessWidget {
     };
 
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border(
-          left: BorderSide(color: statusAccentColor, width: 4),
-          top: BorderSide(
-            color: isUrgent ? AppColors.orange : AppColors.outline,
-          ),
-          right: BorderSide(
-            color: isUrgent ? AppColors.orange : AppColors.outline,
-          ),
-          bottom: BorderSide(
-            color: isUrgent ? AppColors.orange : AppColors.outline,
-          ),
+        border: Border.all(
+          color: isUrgent ? AppColors.orange : AppColors.outline,
+          width: isUrgent ? 1.5 : 1.0,
         ),
         boxShadow: AppShadow.soft,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Text(
-                l10n.orderNumberLabel(order.orderNumber),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: UniBiteColors.primary700,
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 5,
+              color: statusAccentColor,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          l10n.orderNumberLabel(order.orderNumber),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: AppColors.green900,
                 ),
               ),
               const Spacer(),
-              StatusBadge(
+              UbStatusBadge(
                 label: l10n.orderTypeLabel(order.type),
                 backgroundColor: order.type == OrderType.walkin
-                    ? UniBiteColors.secondarySoft
-                    : UniBiteColors.primary100,
+                    ? AppColors.orangeSoft
+                    : AppColors.green100,
                 textColor: order.type == OrderType.walkin
-                    ? UniBiteColors.secondaryText
-                    : UniBiteColors.primary700,
+                    ? AppColors.orangeText
+                    : AppColors.green700,
               ),
             ],
           ),
@@ -776,15 +787,15 @@ class _OrderTicketCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: UniBiteColors.accentSoft,
-                borderRadius: BorderRadius.circular(UniBiteTokens.r12),
+                color: AppColors.yellow,
+                borderRadius: BorderRadius.circular(AppRadius.input),
               ),
               child: Text(
                 l10n.selectedPickupTime(
                   DateFormat.Hm().format(order.pickupTime!),
                 ),
                 style: const TextStyle(
-                  color: UniBiteColors.onAccent,
+                  color: AppColors.onYellow,
                   fontWeight: FontWeight.w700,
                   fontSize: 12,
                 ),
@@ -809,7 +820,7 @@ class _OrderTicketCard extends StatelessWidget {
                     Text(
                       '  • ${item.note}',
                       style: const TextStyle(
-                        color: UniBiteColors.secondaryText,
+                        color: AppColors.orangeText,
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                       ),
@@ -870,19 +881,24 @@ class _OrderTicketCard extends StatelessWidget {
           ] else if (order.status == OrderStatus.preparing) ...[
             UbPrimaryButton(
               onPressed: onMarkReady,
-              backgroundColor: UniBiteColors.primary500,
+              backgroundColor: AppColors.green500,
               label: l10n.markReadyButton,
             ),
           ] else if (order.status == OrderStatus.ready) ...[
             UbPrimaryButton(
               onPressed: onComplete,
-              backgroundColor: UniBiteColors.primary700,
+              backgroundColor: AppColors.green700,
               icon: LucideIcons.checkCircle2,
               label: l10n.completePickupButton,
             ),
           ],
         ],
       ),
-    );
+    ),
+  ),
+],
+),
+),
+);
   }
 }

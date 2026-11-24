@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:unibite/core/design_system/colors.dart';
 import 'package:unibite/core/design_system/components.dart';
 import 'package:unibite/core/errors/app_exceptions.dart';
 import 'package:unibite/core/l10n/l10n_extensions.dart';
@@ -38,10 +37,7 @@ class _SystemAdminDashboardScreenState
     final isWide = MediaQuery.sizeOf(context).width >= 840;
 
     if (actor == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.green50,
-        body: SizedBox.shrink(),
-      );
+      return const Scaffold(body: SizedBox.shrink());
     }
 
     final destinations = [
@@ -89,16 +85,16 @@ class _SystemAdminDashboardScreenState
         ),
         actions: [
           if (isWide) ...[
-            StatusBadge(
+            UbStatusBadge(
               label: l10n.liveConnectedBadge,
-              backgroundColor: UniBiteColors.primary100,
-              textColor: UniBiteColors.primary700,
+              backgroundColor: AppColors.green100,
+              textColor: AppColors.green700,
             ),
             const SizedBox(width: 8),
-            StatusBadge(
+            UbStatusBadge(
               label: l10n.screenAwakeBadge,
-              backgroundColor: UniBiteColors.primary50,
-              textColor: UniBiteColors.inkMuted,
+              backgroundColor: AppColors.green50,
+              textColor: AppColors.inkMuted,
             ),
             const SizedBox(width: 6),
           ],
@@ -123,20 +119,20 @@ class _SystemAdminDashboardScreenState
                 NavigationRail(
                   selectedIndex: _selectedTab,
                   extended: MediaQuery.sizeOf(context).width >= 1120,
-                  backgroundColor: UniBiteColors.primary900,
-                  indicatorColor: UniBiteColors.secondary,
+                  backgroundColor: AppColors.green900,
+                  indicatorColor: AppColors.orange,
                   selectedIconTheme: const IconThemeData(
-                    color: UniBiteColors.surface,
+                    color: AppColors.ink,
                   ),
                   unselectedIconTheme: const IconThemeData(
-                    color: UniBiteColors.primary100,
+                    color: AppColors.green100,
                   ),
                   selectedLabelTextStyle: const TextStyle(
-                    color: UniBiteColors.surface,
+                    color: AppColors.ink,
                     fontWeight: FontWeight.w700,
                   ),
                   unselectedLabelTextStyle: const TextStyle(
-                    color: UniBiteColors.primary100,
+                    color: AppColors.green100,
                     fontWeight: FontWeight.w500,
                   ),
                   onDestinationSelected: (idx) =>
@@ -191,8 +187,8 @@ class _UniversitiesTab extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: null,
         onPressed: () => _showUniversityDialog(context, ref),
-        backgroundColor: UniBiteColors.secondary,
-        foregroundColor: UniBiteColors.surface,
+        backgroundColor: AppColors.orange,
+        foregroundColor: AppColors.ink,
         icon: const Icon(LucideIcons.plus),
         label: Text(l10n.addUniversityButton),
       ),
@@ -215,10 +211,10 @@ class _UniversitiesTab extends ConsumerWidget {
               return Card(
                 child: ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: UniBiteColors.primary100,
+                    backgroundColor: AppColors.green100,
                     child: Icon(
                       LucideIcons.graduationCap,
-                      color: UniBiteColors.primary700,
+                      color: AppColors.green700,
                     ),
                   ),
                   title: Text(
@@ -229,14 +225,14 @@ class _UniversitiesTab extends ConsumerWidget {
                     padding: const EdgeInsets.only(top: 6),
                     child: Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: StatusBadge(
+                      child: UbStatusBadge(
                         label: uni.isActive ? l10n.active : l10n.inactive,
                         backgroundColor: uni.isActive
-                            ? UniBiteColors.primary100
-                            : UniBiteColors.dangerSoft,
+                            ? AppColors.green100
+                            : AppColors.dangerSoft,
                         textColor: uni.isActive
-                            ? UniBiteColors.primary700
-                            : UniBiteColors.dangerText,
+                            ? AppColors.green700
+                            : AppColors.dangerText,
                       ),
                     ),
                   ),
@@ -359,8 +355,8 @@ class _CampusesTabState extends ConsumerState<_CampusesTab> {
         onPressed: universities.isEmpty
             ? null
             : () => _showCampusDialog(context, universities),
-        backgroundColor: UniBiteColors.secondary,
-        foregroundColor: UniBiteColors.surface,
+        backgroundColor: AppColors.orange,
+        foregroundColor: AppColors.ink,
         icon: const Icon(LucideIcons.plus),
         label: Text(l10n.addCampusButton),
       ),
@@ -408,10 +404,10 @@ class _CampusesTabState extends ConsumerState<_CampusesTab> {
                     return Card(
                       child: ListTile(
                         leading: const CircleAvatar(
-                          backgroundColor: UniBiteColors.secondarySoft,
+                          backgroundColor: AppColors.orangeSoft,
                           child: Icon(
                             LucideIcons.mapPin,
-                            color: UniBiteColors.secondaryText,
+                            color: AppColors.orangeText,
                           ),
                         ),
                         title: Text(
@@ -602,8 +598,8 @@ class _CafeteriasTab extends ConsumerWidget {
                 universities,
                 campuses,
               ),
-        backgroundColor: UniBiteColors.secondary,
-        foregroundColor: UniBiteColors.surface,
+        backgroundColor: AppColors.orange,
+        foregroundColor: AppColors.ink,
         icon: const Icon(LucideIcons.plus),
         label: Text(l10n.addCafeteriaButton),
       ),
@@ -634,10 +630,10 @@ class _CafeteriasTab extends ConsumerWidget {
                     children: [
                       const CircleAvatar(
                         radius: 26,
-                        backgroundColor: UniBiteColors.primary100,
+                        backgroundColor: AppColors.green100,
                         child: Icon(
                           LucideIcons.store,
-                          color: UniBiteColors.primary700,
+                          color: AppColors.green700,
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -656,13 +652,13 @@ class _CafeteriasTab extends ConsumerWidget {
                             Text(
                               '${uni?.name ?? cafe.universityId} • ${campus?.name ?? cafe.campusId}',
                               style: const TextStyle(
-                                color: UniBiteColors.inkMuted,
+                                color: AppColors.inkMuted,
                               ),
                             ),
                             Text(
                               '${owner?.name ?? cafe.ownerId} (${owner?.email ?? ''}) • ${cafe.workingHours}',
                               style: const TextStyle(
-                                color: UniBiteColors.inkMuted,
+                                color: AppColors.inkMuted,
                                 fontSize: 12.5,
                               ),
                             ),
@@ -673,14 +669,14 @@ class _CafeteriasTab extends ConsumerWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          StatusBadge(
+                          UbStatusBadge(
                             label: cafe.isActive ? l10n.active : l10n.suspended,
                             backgroundColor: cafe.isActive
-                                ? UniBiteColors.primary100
-                                : UniBiteColors.dangerSoft,
+                                ? AppColors.green100
+                                : AppColors.dangerSoft,
                             textColor: cafe.isActive
-                                ? UniBiteColors.primary700
-                                : UniBiteColors.dangerText,
+                                ? AppColors.green700
+                                : AppColors.dangerText,
                           ),
                           Switch(
                             value: cafe.isActive,
@@ -756,7 +752,7 @@ class _CafeteriasTab extends ConsumerWidget {
                         Text(
                           dialogError!,
                           style: const TextStyle(
-                            color: UniBiteColors.dangerText,
+                            color: AppColors.dangerText,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -989,13 +985,13 @@ class _UsersTabState extends ConsumerState<_UsersTab> {
                   return Card(
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: UniBiteColors.primary100,
+                        backgroundColor: AppColors.green100,
                         child: Text(
                           user.name.isNotEmpty
                               ? user.name[0].toUpperCase()
                               : '?',
                           style: const TextStyle(
-                            color: UniBiteColors.primary700,
+                            color: AppColors.green700,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -1010,14 +1006,14 @@ class _UsersTabState extends ConsumerState<_UsersTab> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          StatusBadge(
+                          UbStatusBadge(
                             label: user.isActive ? l10n.active : l10n.inactive,
                             backgroundColor: user.isActive
-                                ? UniBiteColors.primary100
-                                : UniBiteColors.dangerSoft,
+                                ? AppColors.green100
+                                : AppColors.dangerSoft,
                             textColor: user.isActive
-                                ? UniBiteColors.primary700
-                                : UniBiteColors.dangerText,
+                                ? AppColors.green700
+                                : AppColors.dangerText,
                           ),
                           const SizedBox(width: 8),
                           Switch(

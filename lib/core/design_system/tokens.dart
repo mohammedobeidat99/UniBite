@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:unibite/core/design_system/app_spacing.dart';
 
-export 'app_spacing.dart';
-
-/// Backward-compatible alias for [AppSpacing], [AppRadius], [AppShadow], [AppMotion].
+/// Backward-compatible alias class for [AppSpacing], [AppRadius], [AppShadow], and [AppMotion].
 class UniBiteTokens {
   UniBiteTokens._();
 
-  static const double s4 = AppSpacing.s4;
-  static const double s8 = AppSpacing.s8;
-  static const double s12 = AppSpacing.s12;
-  static const double s16 = AppSpacing.s16;
-  static const double s20 = AppSpacing.s20;
-  static const double s24 = AppSpacing.s24;
-  static const double s32 = AppSpacing.s32;
+  static const double s4 = AppSpacing.xs4;
+  static const double s8 = AppSpacing.sm8;
+  static const double s12 = AppSpacing.md12;
+  static const double s16 = AppSpacing.lg16;
+  static const double s20 = AppSpacing.xl20;
+  static const double s24 = AppSpacing.xxl24;
+  static const double s32 = AppSpacing.xxxl32;
 
   static const double screenPadding = AppSpacing.screenPadding;
   static const double sectionGap = AppSpacing.sectionGap;

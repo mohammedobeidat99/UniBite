@@ -43,12 +43,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (location == '/splash') return null;
 
-      const publicRoutes = {
-        '/intro',
-        '/login',
-        '/register',
-        '/reset-password',
-      };
+      const publicRoutes = {'/intro', '/login', '/register', '/reset-password'};
 
       if (user == null) {
         return publicRoutes.contains(location) ? null : '/login';
